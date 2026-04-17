@@ -1,5 +1,5 @@
-// src/pages/legal/FAQ.tsx
 import { BookOpen } from "lucide-react";
+import LegalLayout from "@/components/legal/LegalLayout";
 
 const faq = [
   {
@@ -26,30 +26,20 @@ const faq = [
 
 export default function FAQ() {
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="mx-auto max-w-md px-5 py-6">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-2xl bg-white/10 p-3">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold">FAQ</h1>
-            <p className="text-sm text-white/60">Perguntas frequentes do aplicativo.</p>
-          </div>
+    <LegalLayout
+      icon={BookOpen}
+      title="FAQ"
+      subtitle="Perguntas frequentes do aplicativo."
+    >
+      {faq.map((item) => (
+        <div
+          key={item.q}
+          className="rounded-3xl border border-white/10 bg-white/[0.03] p-4"
+        >
+          <h2 className="mb-2 text-base font-medium">{item.q}</h2>
+          <p className="text-sm leading-6 text-white/70">{item.a}</p>
         </div>
-
-        <div className="space-y-3">
-          {faq.map((item) => (
-            <div
-              key={item.q}
-              className="rounded-3xl border border-white/10 bg-white/[0.03] p-4"
-            >
-              <h2 className="mb-2 text-base font-medium">{item.q}</h2>
-              <p className="text-sm leading-6 text-white/70">{item.a}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+      ))}
+    </LegalLayout>
   );
 }

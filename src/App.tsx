@@ -1,4 +1,3 @@
-// adicione estes imports no topo do src/App.tsx
 import Ajuda from "./pages/legal/Ajuda";
 import Suporte from "./pages/legal/Suporte";
 import FAQ from "./pages/legal/FAQ";
@@ -49,12 +48,6 @@ function ProtectedRoutes() {
   return (
     <>
       <Routes>
-        {/* adicione estas rotas dentro de <Routes> */}
-        <Route path="/ajuda" element={<Ajuda />} />
-        <Route path="/suporte" element={<Suporte />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/privacidade" element={<Privacidade />} />
-        <Route path="/termos" element={<Termos />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/faturamento" element={<Faturamento />} />
         <Route path="/jornada" element={<Jornada />} />
@@ -94,6 +87,11 @@ const App = () => (
         <AuthProvider>
           <div className="min-h-screen bg-background">
             <Routes>
+              <Route path="/ajuda" element={<Ajuda />} />
+              <Route path="/suporte" element={<Suporte />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/privacidade" element={<Privacidade />} />
+              <Route path="/termos" element={<Termos />} />
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/*" element={<ProtectedRoutes />} />
