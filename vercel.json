@@ -1,5 +1,6 @@
 {
   "routes": [
+    { "src": "/login", "dest": "/" },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/" }
   ]
