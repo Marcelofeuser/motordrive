@@ -1,18 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  DollarSign,
-  Route,
-  Fuel,
-  Wrench,
-  Target,
-  FileText,
-  AlertTriangle,
-  User,
-  Zap,
-  Car,
-  Shield,
-  TrendingUp,
+  LayoutDashboard, DollarSign, Route, Fuel, Wrench, Target,
+  FileText, AlertTriangle, User, Zap, Car, Shield, TrendingUp, BarChart3,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +20,7 @@ const moreTabs = [
   { icon: Target, label: "Metas", path: "/metas" },
   { icon: TrendingUp, label: "Lucro Real", path: "/lucro-real" },
   { icon: FileText, label: "Relatórios", path: "/relatorios" },
+  { icon: BarChart3, label: "Resumo", path: "/resumo" },
   { icon: AlertTriangle, label: "Multas", path: "/multas" },
   { icon: Shield, label: "CNH", path: "/cnh" },
   { icon: Car, label: "Veículo", path: "/veiculo" },
@@ -72,14 +62,9 @@ export default function BottomNav() {
                 {moreTabs.map((tab) => (
                   <button
                     key={tab.path}
-                    onClick={() => {
-                      navigate(tab.path);
-                      setShowMore(false);
-                    }}
+                    onClick={() => { navigate(tab.path); setShowMore(false); }}
                     className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-colors ${
-                      isActive(tab.path)
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground"
+                      isActive(tab.path) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <tab.icon className="w-5 h-5" />
@@ -101,24 +86,14 @@ export default function BottomNav() {
                 <button
                   key={tab.path}
                   onClick={() => {
-                    if (tab.path === "__more__") {
-                      setShowMore(!showMore);
-                    } else {
-                      setShowMore(false);
-                      navigate(tab.path);
-                    }
+                    if (tab.path === "__more__") { setShowMore(!showMore); }
+                    else { setShowMore(false); navigate(tab.path); }
                   }}
-                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
-                    active ? "text-primary" : "text-muted-foreground"
-                  }`}
+                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${active ? "text-primary" : "text-muted-foreground"}`}
                 >
-                  {active && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mb-0.5" />
-                  )}
+                  {active && <div className="w-1.5 h-1.5 rounded-full bg-primary mb-0.5" />}
                   <tab.icon className="w-5 h-5" />
-                  <span className="text-[10px] uppercase tracking-wider font-semibold">
-                    {tab.label}
-                  </span>
+                  <span className="text-[10px] uppercase tracking-wider font-semibold">{tab.label}</span>
                 </button>
               );
             })}

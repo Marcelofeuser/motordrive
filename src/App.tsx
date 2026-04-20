@@ -18,6 +18,7 @@ import Abastecimento from "@/pages/Abastecimento";
 import Manutencao from "@/pages/Manutencao";
 import Metas from "@/pages/Metas";
 import Relatorios from "@/pages/Relatorios";
+import Resumo from "@/pages/Resumo";
 import Multas from "@/pages/Multas";
 import CNH from "@/pages/CNH";
 import Eletrico from "@/pages/Eletrico";
@@ -55,6 +56,7 @@ function ProtectedRoutes() {
         <Route path="/manutencao" element={<Manutencao />} />
         <Route path="/metas" element={<Metas />} />
         <Route path="/relatorios" element={<Relatorios />} />
+        <Route path="/resumo" element={<Resumo />} />
         <Route path="/multas" element={<Multas />} />
         <Route path="/cnh" element={<CNH />} />
         <Route path="/eletrico" element={<Eletrico />} />
