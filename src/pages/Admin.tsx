@@ -34,7 +34,10 @@ export default function Admin() {
   }, [user]);
 
   const checkAdmin = async () => {
-    const { data } = await supabase.from("admins").select("id").eq("user_id", user!.id).maybeSingle();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { navigate("/login"); return; }
+    const { data, error } = await supabase.from("admins").select("id").eq("user_id", session.user.id).maybeSingle();
+    console.log("admin check:", data, error);
     if (!data) { navigate("/"); return; }
     setIsAdmin(true);
     loadMetrics();
