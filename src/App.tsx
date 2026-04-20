@@ -30,6 +30,7 @@ import Integracoes from "@/pages/Integracoes";
 import Auth from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
+import Admin from "@/pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ const App = () => (
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/login" element={<AuthRoute />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/*" element={<ProtectedRoutes />} />
             </Routes>
           </div>
