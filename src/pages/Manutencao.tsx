@@ -25,7 +25,7 @@ export default function Manutencao() {
     if (!user) return;
     supabase.from("maintenance").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(20)
       .then(({ data }) => {
-        if (data) setEntries(data.map((d: any) => ({ id: d.id, date: d.date, category: d.category, tipo: d.tipo, valor: Number(d.valor), km: Number(d.km), obs: d.obs ?? "" })));
+        if (data) setEntries(data.map((d: any) => ({ id: d.id, date: d.date, category: d.category, tipo: d.tipo ?? "", valor: Number(d.valor), km: Number(d.km), obs: d.obs ?? "" })));
       });
   }, [user]);
 
@@ -34,7 +34,7 @@ export default function Manutencao() {
     const payload = { user_id: user.id, date: form.data, category: selectedCat, tipo: form.tipo, valor: parseFloat(form.valor) || 0, km: parseFloat(form.km) || 0, obs: form.obs };
     const { data, error } = await supabase.from("maintenance").insert(payload).select().single();
     if (error) { toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" }); return; }
-    if (data) setEntries(prev => [{ id: data.id, date: data.date, category: data.category, tipo: data.tipo, valor: Number(data.valor), km: Number(data.km), obs: data.obs ?? "" }, ...prev]);
+    if (data) setEntries(prev => [{ id: data.id, date: data.date, category: data.category, tipo: data.tipo ?? "", valor: Number(data.valor), km: Number(data.km), obs: data.obs ?? "" }, ...prev]);
     toast({ title: "Manutenção registrada!", description: `${selectedCat} - R$ ${form.valor}` });
     setForm({ ...form, tipo: "", valor: "", km: "", obs: "" });
   };
@@ -47,7 +47,6 @@ export default function Manutencao() {
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Manutenção" subtitle="Registrar serviço" />
-
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4 scrollbar-hide">
         {categories.map((c) => (
           <button key={c} onClick={() => setSelectedCat(c)} className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${selectedCat === c ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
@@ -55,7 +54,6 @@ export default function Manutencao() {
           </button>
         ))}
       </div>
-
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
         <div>
           <Label className="text-xs text-muted-foreground uppercase tracking-wider">Data</Label>
@@ -83,7 +81,6 @@ export default function Manutencao() {
           Salvar Manutenção
         </Button>
       </motion.div>
-
       {entries.length > 0 && (
         <div className="mt-6">
           <h3 className="text-sm font-display font-semibold text-muted-foreground uppercase tracking-wider mb-3">Histórico</h3>
