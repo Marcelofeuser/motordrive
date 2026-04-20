@@ -44,7 +44,7 @@ function ProtectedRoutes() {
     );
   }
 
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user) return <Navigate to="/login" replace />;
 
   return (
     <>
