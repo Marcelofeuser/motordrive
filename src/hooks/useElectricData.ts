@@ -1,4 +1,6 @@
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface EVMetrics {
   totalKm: number;
@@ -10,30 +12,34 @@ export interface EVMetrics {
   monthlyChargingCost: number;
 }
 
-// Sample data mirroring Eletrico.tsx — will be replaced with DB queries after auth
-const sampleUsage = [
-  { km_total: 142, battery_consumption: 63 },
-  { km_total: 150, battery_consumption: 72 },
-  { km_total: 130, battery_consumption: 55 },
-];
-
-const sampleCharging = [
-  { kwh_charged: 45, total_cost: 32.50 },
-  { kwh_charged: 50, total_cost: 0 },
-  { kwh_charged: 40, total_cost: 55 },
-];
-
 export function useElectricData(): EVMetrics {
-  return useMemo(() => {
-    const totalKm = sampleUsage.reduce((s, u) => s + u.km_total, 0);
-    const totalKwh = sampleCharging.reduce((s, c) => s + c.kwh_charged, 0);
-    const totalChargingCost = sampleCharging.reduce((s, c) => s + c.total_cost, 0);
-    const kmPerKwh = totalKwh > 0 ? totalKm / totalKwh : 0;
-    const costPerKm = totalKm > 0 ? totalChargingCost / totalKm : 0;
-    const days = sampleUsage.length || 1;
-    const avgDailyKm = totalKm / days;
-    const monthlyChargingCost = (totalChargingCost / days) * 30;
+  const { user } = useAuth();
+  const [metrics, setMetrics] = useState<EVMetrics>({
+    totalKm: 0, totalKwh: 0, totalChargingCost: 0,
+    kmPerKwh: 0, costPerKm: 0, avgDailyKm: 0, monthlyChargingCost: 0,
+  });
 
-    return { totalKm, totalKwh, totalChargingCost, kmPerKwh, costPerKm, avgDailyKm, monthlyChargingCost };
-  }, []);
+  useEffect(() => {
+    if (!user) return;
+    async function load() {
+      const [{ data: usage }, { data: charging }] = await Promise.all([
+        supabase.from("electric_usage").select("km_total,battery_consumption").eq("user_id", user.id),
+        supabase.from("electric_charging").select("kwh_charged,total_cost").eq("user_id", user.id),
+      ]);
+
+      const totalKm = (usage ?? []).reduce((s, u) => s + Number(u.km_total ?? 0), 0);
+      const totalKwh = (charging ?? []).reduce((s, c) => s + Number(c.kwh_charged ?? 0), 0);
+      const totalChargingCost = (charging ?? []).reduce((s, c) => s + Number(c.total_cost ?? 0), 0);
+      const kmPerKwh = totalKwh > 0 ? totalKm / totalKwh : 0;
+      const costPerKm = totalKm > 0 ? totalChargingCost / totalKm : 0;
+      const days = Math.max((usage ?? []).length, 1);
+      const avgDailyKm = totalKm / days;
+      const monthlyChargingCost = (totalChargingCost / days) * 30;
+
+      setMetrics({ totalKm, totalKwh, totalChargingCost, kmPerKwh, costPerKm, avgDailyKm, monthlyChargingCost });
+    }
+    load();
+  }, [user]);
+
+  return metrics;
 }
