@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MotorDrive — Controle Total para Motoristas de App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Exo+2:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1a6fd4;
+      --blue-light: #63a7ff;
+      --blue-dark: #0d3d7a;
+      --gold: #e8930a;
+      --gold-light: #f5c14f;
+      --silver: #e8eefb;
+      --bg: #0b0f17;
+      --bg-soft: #101726;
+      --panel: rgba(12, 18, 30, 0.74);
+      --text: #eef4ff;
+      --muted: #cbd4e6;
+      --muted-2: #91a0bb;
+      --border: rgba(97, 158, 255, 0.18);
+      --border-strong: rgba(97, 158, 255, 0.35);
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background:
+        linear-gradient(180deg, rgba(5,8,13,.12), rgba(5,8,13,.6)),
+        #0d0f14 url('./bg-circuito.jpg') center/cover no-repeat fixed;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+
+    .container {
+      width: min(1200px, calc(100% - 48px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section {
+      padding: 96px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(97,158,255,.24), transparent);
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 18px 0;
+      background: rgba(7, 11, 18, 0.62);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(97, 158, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .nav-inner {
+      width: min(1280px, calc(100% - 56px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .nav-brand img {
+      height: 58px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.3));
+    }
+
+    .nav-brand-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--silver);
+      white-space: nowrap;
+    }
+
+    .nav-cta,
+    .btn-primary,
+    .btn-secondary,
+    .btn-plan {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: .25s ease;
+      cursor: pointer;
+    }
+
+    .nav-cta {
+      min-height: 56px;
+      padding: 0 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(108, 168, 255, .55);
+      color: var(--silver);
+      background: linear-gradient(180deg, rgba(21, 34, 58, 0.76), rgba(12, 18, 30, 0.82));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.03),
+        0 0 24px rgba(61,143,232,.22);
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .nav-cta:hover,
+    .btn-secondary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 32px rgba(61,143,232,.28);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 138px 0 72px;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 28% 46%, rgba(245,176,58,.16), transparent 20%),
+        radial-gradient(circle at 69% 42%, rgba(61,143,232,.10), transparent 28%),
+        linear-gradient(180deg, rgba(6,8,12,.22), rgba(6,8,12,.52));
+      pointer-events: none;
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: .98fr 1.02fr;
+      gap: 68px;
+      align-items: center;
+    }
+
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-logo-card {
+      width: min(100%, 520px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-logo-main {
+      width: 100%;
+      max-width: 430px;
+      display: block;
+      height: auto;
+      filter:
+        drop-shadow(0 22px 40px rgba(0,0,0,.46))
+        drop-shadow(0 0 28px rgba(61,143,232,.12));
+    }
+
+    .hero-logo-title {
+      margin-top: 22px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(38px, 5vw, 66px);
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f4f7ff;
+      text-align: center;
+      text-shadow: 0 10px 24px rgba(0,0,0,.45);
+    }
+
+    .hero-logo-line {
+      width: 240px;
+      height: 3px;
+      border-radius: 999px;
+      margin-top: 16px;
+      background: linear-gradient(90deg, rgba(97,158,255,.08), #58a7ff, #f0a323);
+      box-shadow: 0 0 24px rgba(61,143,232,.22);
+    }
+
+    .hero-copy {
+      max-width: 620px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 0 16px;
+      margin-bottom: 24px;
+      border-radius: 999px;
+      background: rgba(10, 15, 24, 0.58);
+      border: 1px solid rgba(240,163,35,.26);
+      color: #ffd784;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f0a323;
+      box-shadow: 0 0 14px rgba(240,163,35,.64);
+    }
+
+    .hero h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(44px, 6vw, 74px);
+      line-height: .98;
+      font-weight: 700;
+      letter-spacing: .2px;
+      margin-bottom: 20px;
+      color: #f4f7ff;
+      text-shadow: 0 10px 28px rgba(0,0,0,.25);
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      line-height: 1.65;
+      color: #d8dfec;
+      margin-bottom: 32px;
+      max-width: 620px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      min-height: 60px;
+      padding: 0 34px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .btn-primary {
+      color: #140d00;
+      background: linear-gradient(180deg, #f5c14f, #d98a12);
+      border: 1px solid rgba(255,214,127,.42);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.08),
+        0 0 26px rgba(232,147,10,.28);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.11),
+        0 0 34px rgba(232,147,10,.38);
+    }
+
+    .btn-secondary {
+      color: var(--silver);
+      background: rgba(9, 14, 24, 0.52);
+      border: 1px solid rgba(108, 168, 255, .52);
+      box-shadow: 0 0 24px rgba(61,143,232,.14);
+    }
+
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #d7deed;
+    }
+
+    .trust-dots {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .trust-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #f0a323;
+      box-shadow: 0 0 12px rgba(240,163,35,.42);
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.08;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--muted-2);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: linear-gradient(135deg, rgba(16,23,38,.88), rgba(12,18,30,.92));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      transition: .25s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--blue-light), transparent);
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-strong);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.34);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(29,107,212,.20), rgba(29,107,212,.06));
+      border: 1px solid rgba(29,107,212,.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+
+    .feature-card.gold-accent .feature-icon {
+      background: linear-gradient(135deg, rgba(232,147,10,.20), rgba(232,147,10,.06));
+      border-color: rgba(232,147,10,.30);
+    }
+
+    .feature-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: .4px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--muted-2);
+      line-height: 1.65;
+    }
+
+    .pricing-section {
+      padding: 100px 0;
+      background: linear-gradient(180deg, transparent, rgba(13,61,122,.06), transparent);
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: linear-gradient(135deg, rgba(16,23,38,.90), rgba(12,18,30,.94));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .pricing-card.featured {
+      border-color: rgba(232,147,10,.55);
+      box-shadow: 0 22px 60px rgba(0,0,0,.36), 0 0 34px rgba(232,147,10,.12);
+    }
+
+    .pricing-card.featured::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(232,147,10,.05), transparent);
+      pointer-events: none;
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--gold-light), #cc7f07);
+      color: #140d00;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 999px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .pricing-name {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      margin-bottom: 16px;
+    }
+
+    .pricing-price {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .pricing-price .cur {
+      font-size: 24px;
+      color: var(--muted-2);
+      vertical-align: top;
+      margin-right: 2px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .pricing-price .per {
+      font-size: 16px;
+      color: var(--muted-2);
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 400;
+    }
+
+    .pricing-trial,
+    .pricing-free {
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+
+    .pricing-trial { color: var(--gold-light); font-weight: 600; }
+    .pricing-free { color: var(--muted-2); }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      color: #d6dfef;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--gold-light);
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .pricing-features li.muted {
+      color: var(--muted-2);
+    }
+
+    .pricing-features li.muted::before {
+      content: '—';
+      color: var(--muted-2);
+    }
+
+    .btn-plan {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+
+    .btn-plan-primary {
+      background: linear-gradient(135deg, var(--gold-light), #cc7f07);
+      color: #140d00;
+      border: none;
+      box-shadow: 0 0 26px rgba(232,147,10,.26);
+    }
+
+    .btn-plan-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-plan-primary:hover,
+    .btn-plan-secondary:hover {
+      transform: translateY(-1px);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue), var(--gold), var(--blue), transparent);
+      opacity: .4;
+    }
+
+    .step {
+      text-align: center;
+      padding: 20px 12px;
+    }
+
+    .step-num {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(29,107,212,.20), rgba(13,61,122,.40));
+      border: 2px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--blue-light);
+      box-shadow: 0 0 20px rgba(29,107,212,.18);
+    }
+
+    .step-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--muted-2);
+      line-height: 1.55;
+    }
+
+    .cta-section {
+      padding: 100px 0;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, rgba(13,24,45,.62), rgba(12,18,30,.76));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    }
+
+    footer {
+      border-top: 1px solid rgba(97,158,255,.16);
+      padding: 40px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted-2);
+      position: relative;
+      z-index: 1;
+      background: rgba(8,12,18,.28);
+      backdrop-filter: blur(10px);
+    }
+
+    .footer-logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .footer-links a {
+      color: var(--muted-2);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .footer-links a:hover {
+      color: var(--blue-light);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up { animation: fadeUp .8s ease forwards; }
+    .delay-1 { animation-delay: .1s; opacity: 0; }
+    .delay-2 { animation-delay: .2s; opacity: 0; }
+    .delay-3 { animation-delay: .3s; opacity: 0; }
+    .delay-4 { animation-delay: .4s; opacity: 0; }
+
+    @media (max-width: 960px) {
+      .hero-content { grid-template-columns: 1fr; gap: 42px; }
+      .hero-visual { order: -1; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 460px; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .steps::before { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-inner { width: min(100% - 28px, 100% - 28px); }
+      .nav-brand img { height: 44px; }
+      .nav-brand-text { font-size: 16px; }
+      .nav-cta {
+        min-height: 46px;
+        padding: 0 18px;
+        font-size: 13px;
+      }
+      .hero {
+        padding-top: 120px;
+      }
+      .hero-logo-main { max-width: 300px; }
+      .hero-logo-title { font-size: 42px; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .btn-primary, .btn-secondary { width: 100%; }
+      .hero-trust { flex-wrap: wrap; }
+    }
+
+    @media (max-width: 560px) {
+      .container { width: min(100% - 28px, 100% - 28px); }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .section, .pricing-section, .cta-section { padding: 80px 0; }
+      .pricing-card, .cta-box { padding: 28px; }
+      .footer-links { gap: 14px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <img src="./logo.png" alt="MotorDrive" />
+        <div class="nav-brand-text">Motor Drive</div>
+      </div>
+      <a href="https://motordrive.app/auth" class="nav-cta">Comece Gratuitamente</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-visual fade-up">
+          <div class="hero-logo-card">
+            <img class="hero-logo-main" src="./logo.png" alt="Logo MotorDrive" />
+            <div class="hero-logo-title">Motor Drive</div>
+            <div class="hero-logo-line"></div>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <div class="hero-badge fade-up">Para motoristas de Uber, 99 e inDrive</div>
+          <h1 class="fade-up delay-1">Controle Total para Motoristas de App</h1>
+          <p class="hero-sub fade-up delay-2">
+            Maximize seu lucro real usando inteligência e automação para decisões rápidas ao dirigir para Uber, 99, inDrive e outros.
+          </p>
+          <div class="hero-actions fade-up delay-3">
+            <a href="https://motordrive.app/auth" class="btn-primary">Comece Gratuitamente</a>
+            <a href="#precos" class="btn-secondary">Saiba Mais</a>
+          </div>
+          <div class="hero-trust fade-up delay-4">
+            <div class="trust-dots">
+              <div class="trust-dot"></div>
+              <div class="trust-dot"></div>
+              <div class="trust-dot"></div>
+            </div>
+            Confiado por motoristas que buscam mais controle e lucro real
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Funcionalidades</div>
+      <h2 class="section-title">Tudo que você precisa<br>para dirigir com lucro</h2>
+      <p class="section-sub">Ferramentas profissionais pensadas para a realidade do motorista brasileiro.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <div class="feature-title">Faturamento por App</div>
+          <div class="feature-desc">Registre ganhos separados por Uber, 99, inDrive com gorjetas, bônus e taxas.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Dashboard em Tempo Real</div>
+          <div class="feature-desc">Veja seu lucro do dia, semana e mês com gráficos e metas automáticas.</div>
+        </div>
+        <div class="feature-card gold-accent">
+          <div class="feature-icon">⛽</div>
+          <div class="feature-title">Controle de Combustível</div>
+          <div class="feature-desc">Monitore abastecimentos, custo por litro e consumo médio km/L.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔧</div>
+          <div class="feature-title">Manutenção e Custos</div>
+          <div class="feature-desc">Registre troca de óleo, pneus, freios e veja o custo real por km rodado.</div>
+        </div>
+        <div class="feature-card gold-accent">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-title">IA para Documentos</div>
+          <div class="feature-desc">Escaneie CNH, CRLV e multas com IA. Dados extraídos automaticamente.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Suporte a Veículos EV</div>
+          <div class="feature-desc">Controle recargas, kWh, custo por km e eficiência do seu elétrico.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-title">Metas e Alertas</div>
+          <div class="feature-desc">Defina metas diárias, semanais e mensais. Receba alertas de vencimentos.</div>
+        </div>
+        <div class="feature-card gold-accent">
+          <div class="feature-icon">📈</div>
+          <div class="feature-title">Lucro Real</div>
+          <div class="feature-desc">Saiba exatamente quanto sobra depois de combustível, manutenção e multas.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">Resumo Total</div>
+          <div class="feature-desc">Relatórios semanais, mensais e anuais com todos os seus números.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Como funciona</div>
+      <h2 class="section-title">Simples de usar,<br>poderoso nos resultados</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Crie sua conta</div>
+          <div class="step-desc">Cadastro em segundos. 7 dias grátis sem cartão.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">Cadastre seu veículo</div>
+          <div class="step-desc">Escaneie o CRLV com IA ou preencha manualmente.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Registre seus ganhos</div>
+          <div class="step-desc">Diariamente em menos de 1 minuto por app.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-title">Acompanhe seu lucro</div>
+          <div class="step-desc">Dashboard atualizado em tempo real com todos os dados.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="pricing-section" id="precos">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:56px;">
+        <div class="section-label" style="text-align:center;">Planos</div>
+        <h2 class="section-title">Invista menos de R$ 2 por dia<br>para ganhar muito mais</h2>
+        <p style="font-size:16px; color:var(--muted-2);">Sem fidelidade. Cancele quando quiser.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-name">Trial Grátis</div>
+          <div class="pricing-price"><span class="cur">R$</span>0</div>
+          <div class="pricing-free">Por 7 dias · Sem cartão</div>
+          <ul class="pricing-features">
+            <li>Dashboard completo</li>
+            <li>Registro de faturamento</li>
+            <li>Controle de abastecimento</li>
+            <li>Manutenção básica</li>
+            <li class="muted">IA para documentos</li>
+            <li class="muted">Relatórios avançados</li>
+            <li class="muted">Suporte prioritário</li>
+          </ul>
+          <a href="https://motordrive.app/auth" class="btn-plan btn-plan-secondary">Começar Grátis</a>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Popular</div>
+          <div class="pricing-name">Pro Mensal</div>
+          <div class="pricing-price"><span class="cur">R$</span>39<span class="per">,90/mês</span></div>
+          <div class="pricing-trial">7 dias grátis incluídos</div>
+          <ul class="pricing-features">
+            <li>Tudo do Trial</li>
+            <li>IA para CNH, CRLV e Multas</li>
+            <li>Relatórios semanais, mensais e anuais</li>
+            <li>Resumo Total com filtros</li>
+            <li>Suporte a veículos elétricos</li>
+            <li>Lucro Real detalhado</li>
+            <li>Suporte prioritário via WhatsApp</li>
+          </ul>
+          <a href="https://motordrive.app/auth" class="btn-plan btn-plan-primary">Começar Agora</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <div class="section-label" style="text-align:center;">Comece hoje</div>
+        <h2 class="section-title" style="text-align:center; margin-bottom:16px;">
+          Pare de trabalhar no escuro.<br>Saiba exatamente quanto você ganha.
+        </h2>
+        <p style="font-size:16px; color:var(--muted-2); text-align:center; margin-bottom:36px; max-width:480px; margin-left:auto; margin-right:auto;">
+          Junte-se a motoristas que já controlam seu faturamento e lucro com o MotorDrive.
+        </p>
+        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+          <a href="https://motordrive.app/auth" class="btn-primary">7 Dias Grátis — Sem Cartão</a>
+          <a href="#precos" class="btn-secondary">Ver Planos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-logo">Motor<span style="color:var(--gold-light)">Drive</span></div>
+      <div class="footer-links">
+        <a href="https://motordrive.app/termos">Termos de Uso</a>
+        <a href="https://motordrive.app/privacidade">Privacidade</a>
+        <a href="https://motordrive.app/suporte">Suporte</a>
+        <a href="https://motordrive.app/faq">FAQ</a>
+      </div>
+      <p>© 2026 MotorDrive · Feito para motoristas brasileiros 🇧🇷</p>
+    </div>
+  </footer>
+</body>
+</html>
