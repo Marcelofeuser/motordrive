@@ -34,6 +34,22 @@ export const DEFAULT_SETTINGS: UserSettings = {
   currency: "BRL",
 };
 
+function toErrorMessage(error: unknown) {
+  return String(
+    (typeof error === "object" && error && "message" in error
+      ? (error as { message?: unknown }).message
+      : "") || "",
+  ).trim();
+}
+
+export function isMissingUserSettingsTableError(error: unknown) {
+  const message = toErrorMessage(error).toLowerCase();
+  return (
+    message.includes("public.user_settings") &&
+    (message.includes("schema cache") || message.includes("could not find the table"))
+  );
+}
+
 export async function getOrCreateSettings() {
   const {
     data: { user },
@@ -49,7 +65,15 @@ export async function getOrCreateSettings() {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingUserSettingsTableError(error)) {
+      return {
+        user_id: user.id,
+        ...DEFAULT_SETTINGS,
+      };
+    }
+    throw error;
+  }
 
   if (data) return data;
 
@@ -82,6 +106,15 @@ export async function updateSettings(patch: Partial<UserSettings>) {
     .select("*")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingUserSettingsTableError(error)) {
+      return {
+        user_id: user.id,
+        ...DEFAULT_SETTINGS,
+        ...patch,
+      };
+    }
+    throw error;
+  }
   return data;
 }

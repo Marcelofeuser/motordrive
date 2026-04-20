@@ -4,7 +4,11 @@ import { SettingsRow, SettingsSection } from "@/components/Settings/SettingsRow"
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { DEFAULT_SETTINGS, type UserSettings } from "@/lib/settings";
+import {
+  DEFAULT_SETTINGS,
+  isMissingUserSettingsTableError,
+  type UserSettings,
+} from "@/lib/settings";
 import {
   Bell, BellOff, FileText, Brain, MapPin, Tag, Loader2,
   ShieldAlert, Trash2, AlertTriangle,
@@ -76,8 +80,18 @@ export default function Configuracoes() {
         });
         if (insertError) throw insertError;
       }
-    } catch (e: any) {
-      toast.error("Erro ao carregar configurações", { description: e?.message });
+    } catch (error: unknown) {
+      if (isMissingUserSettingsTableError(error)) {
+        setSettings(DEFAULT_SETTINGS);
+        toast.warning("Configurações temporariamente indisponíveis", {
+          description: "Usando os padrões do app até o banco sincronizar.",
+        });
+      } else {
+        toast.error("Erro ao carregar configurações", {
+          description:
+            error instanceof Error ? error.message : "Não foi possível carregar as preferências.",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -94,8 +108,11 @@ export default function Configuracoes() {
         .update(patch)
         .eq("user_id", user.id);
       if (error) throw error;
-    } catch (e: any) {
-      toast.error("Erro ao salvar", { description: e?.message });
+    } catch (error: unknown) {
+      toast.error("Erro ao salvar", {
+        description:
+          error instanceof Error ? error.message : "Não foi possível salvar as preferências.",
+      });
       setSettings(settings); // revert
     } finally {
       setSaving(false);
@@ -126,8 +143,10 @@ export default function Configuracoes() {
       toast.success("Conta excluída com sucesso");
       await signOut();
       navigate("/auth", { replace: true });
-    } catch (e: any) {
-      toast.error("Falha ao excluir conta", { description: e?.message ?? "Tente novamente." });
+    } catch (error: unknown) {
+      toast.error("Falha ao excluir conta", {
+        description: error instanceof Error ? error.message : "Tente novamente.",
+      });
     } finally {
       setDeleting(false);
       setDeleteOpen(false);
