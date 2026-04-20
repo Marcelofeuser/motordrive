@@ -1,44 +1,21 @@
 import { motion } from "framer-motion";
-import {
-  DollarSign,
-  TrendingUp,
-  Fuel,
-  MapPin,
-  Target,
-  AlertTriangle,
-  Zap,
-  Battery,
-  BatteryCharging,
-} from "lucide-react";
+import { DollarSign, TrendingUp, Fuel, MapPin, Target, AlertTriangle, Zap } from "lucide-react";
 import StatCard from "@/components/StatCard";
 import { useElectricData } from "@/hooks/useElectricData";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-
-const weekData = [
-  { day: "Seg", value: 320 },
-  { day: "Ter", value: 450 },
-  { day: "Qua", value: 280 },
-  { day: "Qui", value: 510 },
-  { day: "Sex", value: 620 },
-  { day: "Sáb", value: 740 },
-  { day: "Dom", value: 420 },
-];
-
-const platformData = [
-  { name: "Uber", value: 1840, color: "hsl(var(--electric))" },
-  { name: "99", value: 960, color: "hsl(var(--neon-pink))" },
-  { name: "inDrive", value: 520, color: "hsl(var(--velocity-green))" },
-];
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts";
 
 export default function Dashboard() {
   const ev = useElectricData();
+  const dash = useDashboardData();
+
+  const maxWeek = Math.max(...dash.weekData.map((d) => d.value), 1);
+  const todayName = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][new Date().getDay()];
+
+  const [reaisInt, reaisDec] = dash.todayGross
+    .toLocaleString("pt-BR", { minimumFractionDigits: 2 })
+    .split(",");
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-4xl mx-auto">
       {/* Header */}
@@ -66,29 +43,43 @@ export default function Dashboard() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/5 opacity-50" />
         <div className="relative z-10">
           <p className="text-muted-foreground text-sm mb-1">Faturamento Bruto • Hoje</p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-muted-foreground text-2xl font-display font-light">R$</span>
-            <span className="text-6xl font-display font-bold tracking-tighter tabular-nums">
-              742,<span className="text-4xl opacity-50">85</span>
-            </span>
-          </div>
+          {dash.loading ? (
+            <div className="h-16 w-48 bg-muted/40 animate-pulse rounded-xl" />
+          ) : (
+            <div className="flex items-baseline gap-2">
+              <span className="text-muted-foreground text-2xl font-display font-light">R$</span>
+              <span className="text-6xl font-display font-bold tracking-tighter tabular-nums">
+                {reaisInt},<span className="text-4xl opacity-50">{reaisDec}</span>
+              </span>
+            </div>
+          )}
           <div className="mt-6 flex items-center justify-between">
             <div className="flex gap-6">
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Meta</p>
-                <p className="text-velocity-green font-display font-medium text-sm">+R$ 142,85</p>
+                {dash.loading ? (
+                  <div className="h-5 w-20 bg-muted/40 animate-pulse rounded" />
+                ) : (
+                  <p className={`font-display font-medium text-sm ${dash.todayGoalDiff >= 0 ? "text-velocity-green" : "text-secondary"}`}>
+                    {dash.todayGoalDiff >= 0 ? "+" : "-"}R$ {Math.abs(dash.todayGoalDiff).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  </p>
+                )}
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Corridas</p>
-                <p className="font-display font-medium text-sm">18</p>
+                {dash.loading ? (
+                  <div className="h-5 w-8 bg-muted/40 animate-pulse rounded" />
+                ) : (
+                  <p className="font-display font-medium text-sm">{dash.todayTrips}</p>
+                )}
               </div>
             </div>
             <div className="h-10 w-24 flex items-end gap-1">
-              {weekData.slice(-5).map((d, i) => (
+              {dash.weekData.slice(-5).map((d, i) => (
                 <div
                   key={i}
                   className="flex-1 bg-primary rounded-t-sm"
-                  style={{ height: `${(d.value / 740) * 100}%`, opacity: 0.3 + i * 0.17 }}
+                  style={{ height: `${(d.value / maxWeek) * 100}%`, opacity: 0.3 + i * 0.17 }}
                 />
               ))}
             </div>
@@ -98,10 +89,15 @@ export default function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <StatCard label="Distância" value="214.8" unit="km" icon={MapPin} />
-        <StatCard label="Lucro Líquido" value="R$ 512" variant="green" icon={TrendingUp} />
-        <StatCard label="Eficiência" value="R$ 2,85" unit="/km" subtitle="+12% vs média" variant="electric" icon={Zap} />
-        <StatCard label="Combustível" value="12.8" unit="km/L" icon={Fuel} />
+        <StatCard
+          label="Distância"
+          value={dash.totalDistanceToday > 0 ? dash.totalDistanceToday.toFixed(1) : "—"}
+          unit={dash.totalDistanceToday > 0 ? "km" : ""}
+          icon={MapPin}
+        />
+        <StatCard label="Lucro Líquido" value={`R$ ${Math.round(dash.netProfitToday)}`} variant="green" icon={TrendingUp} />
+        <StatCard label="Eficiência" value={`R$ ${dash.todayTrips > 0 && dash.totalDistanceToday > 0 ? (dash.todayGross / dash.totalDistanceToday).toFixed(2) : "—"}`} unit={dash.totalDistanceToday > 0 ? "/km" : ""} variant="electric" icon={Zap} />
+        <StatCard label="Corridas" value={String(dash.todayTrips)} icon={Fuel} />
       </div>
 
       {/* Weekly Chart */}
@@ -115,61 +111,55 @@ export default function Dashboard() {
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Ganhos da Semana
           </h3>
-          <span className="text-xs text-primary font-medium">R$ 3.340</span>
+          <span className="text-xs text-primary font-medium">
+            R$ {dash.weekTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+          </span>
         </div>
-        <div className="h-32">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weekData} barCategoryGap="20%">
-              <XAxis
-                dataKey="day"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 10, fill: "hsl(240 5% 65%)" }}
-              />
-              <YAxis hide />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                {weekData.map((_, i) => (
-                  <Cell
-                    key={i}
-                    fill={i === weekData.length - 2 ? "hsl(183 100% 50%)" : "hsl(183 100% 50% / 0.25)"}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {dash.loading ? (
+          <div className="h-32 bg-muted/30 animate-pulse rounded-lg" />
+        ) : (
+          <div className="h-32">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dash.weekData} barCategoryGap="20%">
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(240 5% 65%)" }} />
+                <YAxis hide />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  {dash.weekData.map((d, i) => (
+                    <Cell key={i} fill={d.day === todayName ? "hsl(183 100% 50%)" : "hsl(183 100% 50% / 0.25)"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </motion.div>
 
       {/* Platform Breakdown */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="glass-card p-5 mb-6"
-      >
-        <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-          Por Plataforma
-        </h3>
-        <div className="space-y-3">
-          {platformData.map((p) => (
-            <div key={p.name} className="flex items-center gap-3">
-              <span className="text-xs font-medium w-16">{p.name}</span>
-              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${(p.value / 1840) * 100}%`,
-                    backgroundColor: p.color,
-                  }}
-                />
+      {!dash.loading && dash.platformData.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass-card p-5 mb-6"
+        >
+          <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            Por Plataforma
+          </h3>
+          <div className="space-y-3">
+            {dash.platformData.map((p) => (
+              <div key={p.name} className="flex items-center gap-3">
+                <span className="text-xs font-medium w-16">{p.name}</span>
+                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${(p.value / dash.platformData[0].value) * 100}%`, backgroundColor: p.color }} />
+                </div>
+                <span className="text-xs font-display font-semibold tabular-nums w-20 text-right">
+                  R$ {p.value.toLocaleString("pt-BR")}
+                </span>
               </div>
-              <span className="text-xs font-display font-semibold tabular-nums w-20 text-right">
-                R$ {p.value.toLocaleString("pt-BR")}
-              </span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* EV Summary */}
       {ev.totalKm > 0 && (
@@ -202,21 +192,25 @@ export default function Dashboard() {
         </motion.div>
       )}
 
-      {/* Alerts */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="border border-secondary/30 bg-secondary/5 rounded-2xl p-4 flex items-center gap-4"
-      >
-        <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center flex-shrink-0">
-          <AlertTriangle className="w-5 h-5 text-secondary" />
-        </div>
-        <div>
-          <p className="text-sm font-semibold">Multa pendente</p>
-          <p className="text-xs text-muted-foreground">Vencimento em 5 dias • Desconto de 40% disponível</p>
-        </div>
-      </motion.div>
+      {/* Alert — meta não atingida */}
+      {!dash.loading && dash.todayTrips > 0 && dash.todayGoalDiff < 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="border border-secondary/30 bg-secondary/5 rounded-2xl p-4 flex items-center gap-4"
+        >
+          <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-5 h-5 text-secondary" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Meta do dia não atingida</p>
+            <p className="text-xs text-muted-foreground">
+              Faltam R$ {Math.abs(dash.todayGoalDiff).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} para bater a meta
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
