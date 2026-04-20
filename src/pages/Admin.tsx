@@ -18,7 +18,7 @@ interface Metrics {
 type Tab = "dashboard" | "users" | "settings";
 
 export default function Admin() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ export default function Admin() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (!user) { navigate("/login"); return; }
+    if (!user && !loading) { navigate("/login"); return; }
     checkAdmin();
   }, [user]);
 
