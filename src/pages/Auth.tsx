@@ -15,6 +15,7 @@ export default function Auth() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +24,8 @@ export default function Auth() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        localStorage.setItem("motordrive_has_account", "true");
+        localStorage.setItem("motordrive_remember", rememberMe ? "true" : "false");
         navigate("/");
       } else {
         const { error } = await supabase.auth.signUp({
@@ -34,6 +37,7 @@ export default function Auth() {
           },
         });
         if (error) throw error;
+        localStorage.setItem("motordrive_has_account", "true");
         toast({
           title: "Conta criada!",
           description: "Verifique seu email para confirmar o cadastro.",

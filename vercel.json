@@ -1,7 +1,15 @@
 {
   "routes": [
-    { "src": "/", "dest": "/landing.html" },
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+    {
+      "src": "/landing.html",
+      "dest": "/landing.html"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
   ]
 }

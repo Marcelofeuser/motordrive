@@ -1,12 +1,29 @@
-import DriverControlIcon from "@/components/branding/DriverControlIcon";
-import DriverControlLogo from "@/components/branding/DriverControlLogo";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
-  return (
-    <div className="min-h-screen bg-slate-950 p-8 space-y-8">
-      <DriverControlIcon size={120} />
-      <DriverControlLogo iconSize={80} />
-      <DriverControlLogo iconSize={80} stacked />
-    </div>
-  );
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) {
+      const rememberMe = localStorage.getItem("motordrive_remember") === "true";
+      if (rememberMe) {
+        navigate("/", { replace: true });
+      } else {
+        navigate("/login", { replace: true });
+      }
+    } else {
+      const hasAccount = localStorage.getItem("motordrive_has_account") === "true";
+      if (hasAccount) {
+        navigate("/login", { replace: true });
+      } else {
+        window.location.href = "/landing.html";
+      }
+    }
+  }, [user, loading]);
+
+  return null;
 }
