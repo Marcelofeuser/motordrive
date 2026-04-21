@@ -62,13 +62,5 @@
     "finance",
     "productivity",
     "utilities"
-  ],
-  "screenshots": [
-    {
-      "src": "/icons/screenshot1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
   ]
 }
