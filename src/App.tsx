@@ -48,7 +48,12 @@ function ProtectedRoutes() {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    const hasAccount = localStorage.getItem("motordrive_has_account") === "true";
+    if (hasAccount) return <Navigate to="/login" replace />;
+    window.location.href = "/landing.html";
+    return null;
+  }
 
   return (
     <>

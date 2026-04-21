@@ -7,7 +7,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const mainTabs = [
-  { icon: LayoutDashboard, label: "Início", path: "/dashboard-home" },
+  { icon: LayoutDashboard, label: "Início", path: "/" },
   { icon: DollarSign, label: "Ganhos", path: "/faturamento" },
   { icon: Route, label: "Jornada", path: "/jornada" },
   { icon: Fuel, label: "Abastece", path: "/abastecimento" },

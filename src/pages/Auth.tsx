@@ -26,7 +26,7 @@ export default function Auth() {
         if (error) throw error;
         localStorage.setItem("motordrive_has_account", "true");
         localStorage.setItem("motordrive_remember", rememberMe ? "true" : "false");
-        navigate("/dashboard-home");
+        navigate("/");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
