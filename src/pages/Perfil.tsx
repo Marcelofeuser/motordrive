@@ -3,6 +3,7 @@ import { User, Car, Settings, Moon, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import TourTooltip from "@/components/TourTooltip";
 import { HelpCircle } from "lucide-react";
 
