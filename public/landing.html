@@ -739,6 +739,16 @@
       .footer-links { gap: 14px 20px; }
     }
   </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a0d14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MotorDrive">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  </script>
 </head>
 <body>
   <nav>
