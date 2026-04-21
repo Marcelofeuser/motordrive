@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import PageHeader from "@/components/PageHeader";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, PieChart, Pie, Tooltip } from "recharts";
@@ -12,6 +14,7 @@ interface FuelRow { date: string; total_cost: number; }
 interface MaintenanceRow { date: string; valor: number; }
 
 export default function Relatorios() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_relatorios"));
   const { user } = useAuth();
   const [period, setPeriod] = useState<Period>("30d");
   const [earnings, setEarnings] = useState<EarningRow[]>([]);
@@ -71,9 +74,13 @@ export default function Relatorios() {
     { label: "90 dias", value: "90d" },
   ];
 
+  const tourSteps = [{ target: "h1", title: "Relatórios 📊", description: "Visualize gráficos detalhados dos seus ganhos." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Relatórios" subtitle="Análise completa" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_relatorios"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       {/* Period selector */}
       <div className="flex gap-2 mb-6">
@@ -179,6 +186,7 @@ export default function Relatorios() {
           </div>
         </>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="relatorios" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

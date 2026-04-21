@@ -31,6 +31,9 @@ import Auth from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
 import Admin from "@/pages/Admin";
+import Planos from "@/pages/Planos";
+import Reservas from "@/pages/Reservas";
+import CheckoutSuccess from "@/pages/CheckoutSuccess";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +69,9 @@ function ProtectedRoutes() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/integracoes" element={<Integracoes />} />
+        <Route path="/planos" element={<Planos />} />
+        <Route path="/reservas" element={<Reservas />} />
+        <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <FloatingActionButton />

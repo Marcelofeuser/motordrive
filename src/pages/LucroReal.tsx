@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import PageHeader from "@/components/PageHeader";
 import { TrendingUp, TrendingDown, DollarSign, Fuel, Wrench, Shield, Car, Utensils, CreditCard, Wifi, Plus, Trash2, Zap } from "lucide-react";
@@ -31,6 +33,7 @@ const expenseCategories = [
 ];
 
 export default function LucroReal() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_lucroreal"));
   const { user } = useAuth();
   const [revenues, setRevenues] = useState<Entry[]>([]);
   const [expenses, setExpenses] = useState<Entry[]>([]);
@@ -73,9 +76,13 @@ export default function LucroReal() {
     else setExpenses(prev => prev.filter(e => e.id !== id));
   };
 
+  const tourSteps = [{ target: "h1", title: "Lucro Real 💎", description: "Veja quanto você ganha após descontar despesas." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Lucro Real" subtitle="Resultado do mês" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_lucroreal"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
       <div className="glass-card p-5 mb-6">
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -162,6 +169,7 @@ export default function LucroReal() {
           </div>
         </DialogContent>
       </Dialog>
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="lucroreal" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

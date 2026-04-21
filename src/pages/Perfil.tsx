@@ -3,8 +3,11 @@ import { User, Car, Settings, Moon, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 
 export default function Perfil() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_perfil"));
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -15,9 +18,13 @@ export default function Perfil() {
     { icon: Moon, label: "Aparência", path: "/configuracoes" },
   ];
 
+  const tourSteps = [{ target: "h1", title: "Perfil 👤", description: "Gerencie informações pessoais e plano de assinatura." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Perfil" subtitle="Configurações" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_perfil"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <div className="glass-card p-6 flex items-center gap-4 mb-6">
         <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -52,6 +59,7 @@ export default function Perfil() {
         <LogOut className="w-4 h-4 mr-2" />
         Sair da Conta
       </Button>
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="perfil" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

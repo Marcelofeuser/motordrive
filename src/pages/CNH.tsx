@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import SmartDocumentUpload from "@/components/SmartDocumentUpload";
@@ -13,6 +15,7 @@ interface CNHData {
 }
 
 export default function CNH() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_cnh"));
   const { user } = useAuth();
   const [cnhData, setCnhData] = useState<CNHData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,9 +50,13 @@ export default function CNH() {
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
 
+  const tourSteps = [{ target: "h1", title: "Sua CNH 🪪", description: "Acompanhe validade e pontuação da sua habilitação." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="CNH" subtitle="Habilitação" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_cnh"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <SmartDocumentUpload
         documentType="cnh"
@@ -111,6 +118,7 @@ export default function CNH() {
           )}
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="cnh" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

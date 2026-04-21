@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
@@ -16,6 +18,7 @@ interface MaintenanceEntry {
 }
 
 export default function Manutencao() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_manutencao"));
   const { user } = useAuth();
   const [selectedCat, setSelectedCat] = useState("Preventiva");
   const [entries, setEntries] = useState<MaintenanceEntry[]>([]);
@@ -44,9 +47,13 @@ export default function Manutencao() {
     setEntries(prev => prev.filter(e => e.id !== id));
   };
 
+  const tourSteps = [{ target: "h1", title: "Manutenção 🔧", description: "Registre manutenções para calcular custo de operação." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Manutenção" subtitle="Registrar serviço" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_manutencao"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4 scrollbar-hide">
         {categories.map((c) => (
           <button key={c} onClick={() => setSelectedCat(c)} className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${selectedCat === c ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
@@ -102,6 +109,7 @@ export default function Manutencao() {
           </div>
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="manutencao" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

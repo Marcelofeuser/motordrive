@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
@@ -21,6 +23,7 @@ interface FuelEntry {
 }
 
 export default function Abastecimento() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_abastecimento"));
   const { user } = useAuth();
   const [selectedFuel, setSelectedFuel] = useState("Gasolina");
   const [entries, setEntries] = useState<FuelEntry[]>([]);
@@ -83,9 +86,13 @@ export default function Abastecimento() {
     setEntries(prev => prev.filter(e => e.id !== id));
   };
 
+  const tourSteps = [{ target: "h1", title: "Abastecimento ⛽", description: "Registre cada abastecimento para calcular custo por km." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Abastecimento" subtitle="Registrar combustível" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_abastecimento"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4">
         {fuelTypes.map((f) => (
@@ -181,6 +188,7 @@ export default function Abastecimento() {
           </div>
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="abastecimento" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

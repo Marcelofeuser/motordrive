@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
@@ -20,6 +22,7 @@ interface Journey {
 }
 
 export default function Jornada() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_jornada"));
   const { user } = useAuth();
   const [entries, setEntries] = useState<Journey[]>([]);
   const [form, setForm] = useState({
@@ -60,9 +63,13 @@ export default function Jornada() {
     setEntries(prev => prev.filter(e => e.id !== id));
   };
 
+  const tourSteps = [{ target: "h1", title: "Controle de Jornada ⏱️", description: "Registre suas horas trabalhadas." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Jornada" subtitle="KM e horas trabalhadas" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_jornada"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <StatCard label="Km Hoje" value={todayKm.toFixed(1)} unit="km" icon={MapPin} variant="electric" />
@@ -126,6 +133,7 @@ export default function Jornada() {
           </div>
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="jornada" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { DollarSign, TrendingUp, Fuel, MapPin, Zap, AlertTriangle, Car, ChevronRight } from "lucide-react";
+import { DollarSign, TrendingUp, Fuel, MapPin, Zap, AlertTriangle, Car, ChevronRight, PiggyBank, HelpCircle } from "lucide-react";
+import TourTooltip, { useTour } from "@/components/TourTooltip";
 import StatCard from "@/components/StatCard";
 import { useElectricData } from "@/hooks/useElectricData";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -17,6 +18,17 @@ export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [veiculo, setVeiculo] = useState<VeiculoData | null>(null);
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_dashboard"));
+  const { startTour } = useTour("dashboard");
+
+  const tourSteps = [
+    { target: "h1", title: "Bem-vindo ao MotorDrive! 👋", description: "Este é seu painel principal. Aqui você acompanha seus ganhos do dia em tempo real." },
+    { target: ".glass-card:nth-child(2)", title: "Seu Veículo 🚗", description: "Cadastre seu veículo aqui. As informações ajudam a calcular custos e lucro real." },
+    { target: ".glass-card:nth-child(3)", title: "Faturamento Bruto 💰", description: "Acompanhe quanto você ganhou hoje. O valor líquido aparece no canto superior direito." },
+    { target: ".grid > :first-child", title: "Cards de Estatísticas 📊", description: "Aqui ficam distância, reservas, semana e corridas. Toque em Reservas para gerenciar seu cofre." },
+    { target: "nav", title: "Menu de Navegação 📱", description: "Use o menu inferior para acessar todas as funcionalidades. Toque em Mais para ver todas as abas." },
+  ];
+  const [totalReservas, setTotalReservas] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -36,7 +48,7 @@ export default function Dashboard() {
         <div>
           <p className="text-muted-foreground font-medium tracking-widest text-xs uppercase">Status: Em Operação</p>
           <h1 className="text-3xl font-display font-bold tracking-tighter">
-            Driver <span className="text-primary">Control</span>
+            Motor<span className="text-primary">Drive</span>
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -80,7 +92,10 @@ export default function Dashboard() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative overflow-hidden glass-card p-6 mb-6">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/5 opacity-50" />
         <div className="relative z-10">
-          <p className="text-muted-foreground text-sm mb-1">Faturamento Bruto • Hoje</p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-muted-foreground text-sm">Faturamento Bruto • Hoje</p>
+            {!dash.loading && <p className="text-xs text-velocity-green font-semibold">Líquido R$ {Math.round(dash.netProfitToday).toLocaleString("pt-BR")}</p>}
+          </div>
           {dash.loading ? (
             <div className="h-16 w-48 bg-muted/40 animate-pulse rounded-xl" />
           ) : (
@@ -120,7 +135,7 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <StatCard label="Distância" value={dash.totalDistanceToday > 0 ? dash.totalDistanceToday.toFixed(1) : "—"} unit={dash.totalDistanceToday > 0 ? "km" : ""} icon={MapPin} />
-        <StatCard label="Lucro Líquido" value={`R$ ${Math.round(dash.netProfitToday)}`} variant="green" icon={TrendingUp} />
+        <StatCard label="Reservas" value={`R$ ${Math.round(totalReservas).toLocaleString("pt-BR")}`} variant="green" icon={PiggyBank} onClick={() => navigate("/reservas")} />
         <StatCard label="Semana" value={`R$ ${Math.round(dash.weekTotal)}`} variant="electric" icon={Zap} />
         <StatCard label="Corridas" value={String(dash.todayTrips)} icon={DollarSign} />
       </div>
@@ -196,6 +211,13 @@ export default function Dashboard() {
         </motion.div>
       )}
 
+      {tourActive && (
+        <TourTooltip
+          steps={tourSteps}
+          tourKey="dashboard"
+          onFinish={() => setTourActive(false)}
+        />
+      )}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]" />

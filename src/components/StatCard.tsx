@@ -8,6 +8,7 @@ interface StatCardProps {
   subtitle?: string;
   icon?: LucideIcon;
   variant?: "default" | "electric" | "pink" | "green";
+  onClick?: () => void;
 }
 
 const variantStyles = {
@@ -17,12 +18,13 @@ const variantStyles = {
   green: "text-velocity-green",
 };
 
-export default function StatCard({ label, value, unit, subtitle, icon: Icon, variant = "default" }: StatCardProps) {
+export default function StatCard({ label, value, unit, subtitle, icon: Icon, variant = "default", onClick }: StatCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card p-5 flex flex-col justify-between"
+      onClick={onClick}
+      className={`glass-card p-5 flex flex-col justify-between${onClick ? " cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
     >
       <div className="flex justify-between items-start mb-4">
         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">

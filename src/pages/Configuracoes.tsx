@@ -11,11 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 
 const STATES = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 const DATA_TABLES = ["earnings","fueling","journeys","maintenance","electric_usage","electric_charging","electric_alerts","multas","lucro_real","manual_earnings","platform_imports","earnings_imports","goals"];
 
 export default function Configuracoes() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_configuracoes"));
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
@@ -102,9 +105,13 @@ export default function Configuracoes() {
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
 
+  const tourSteps = [{ target: "h1", title: "Configurações ⚙️", description: "Personalize o app conforme suas preferências." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Configurações" subtitle="Preferências do app" showBack />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_configuracoes"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
       {saving && <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 px-1"><Loader2 className="w-3 h-3 animate-spin" /> Salvando...</div>}
 
       <SettingsSection title="Notificações">
@@ -196,6 +203,7 @@ export default function Configuracoes() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="configuracoes" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import SmartDocumentUpload from "@/components/SmartDocumentUpload";
@@ -15,6 +17,7 @@ interface VeiculoData {
 }
 
 export default function Veiculo() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_veiculo"));
   const { user } = useAuth();
   const [veiculoData, setVeiculoData] = useState<VeiculoData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,12 +43,16 @@ export default function Veiculo() {
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
 
+  const tourSteps = [{ target: "h1", title: "Veículo 🚗", description: "Cadastre seu veículo para controle preciso de custos." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Veículo" subtitle="Dados do carro" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_veiculo"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <SmartDocumentUpload
-        documentType="veiculo"
+        documentType="crv"
         onDataExtracted={handleExtracted}
         triggerLabel="Escanear CRLV com IA"
       />
@@ -114,6 +121,7 @@ export default function Veiculo() {
           )}
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="veiculo" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

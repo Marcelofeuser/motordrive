@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
@@ -18,6 +20,7 @@ interface Earning {
 }
 
 export default function Faturamento() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_faturamento"));
   const { user } = useAuth();
   const [selected, setSelected] = useState("Uber");
   const [entries, setEntries] = useState<Earning[]>([]);
@@ -83,9 +86,13 @@ export default function Faturamento() {
     { key: "corridas", label: "Nº de Corridas", integer: true },
   ];
 
+  const tourSteps = [{ target: "h1", title: "Registro de Ganhos 💵", description: "Registre seus faturamentos por plataforma." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Faturamento" subtitle="Registrar ganhos" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_faturamento"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4 scrollbar-hide">
         {platforms.map((p) => (
@@ -147,6 +154,7 @@ export default function Faturamento() {
           </div>
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="faturamento" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

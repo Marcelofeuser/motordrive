@@ -18,7 +18,7 @@ interface Metrics {
 type Tab = "dashboard" | "users" | "settings";
 
 export default function Admin() {
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, session, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -29,19 +29,28 @@ export default function Admin() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (!user && !loading) { navigate("/login"); return; }
+    if (authLoading) return;
+    if (!user) { navigate("/login"); return; }
     checkAdmin();
-  }, [user]);
+  }, [user, authLoading]);
 
   const checkAdmin = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { navigate("/login"); return; }
-    const { data, error } = await supabase.from("admins").select("id").eq("user_id", session.user.id).maybeSingle();
-    console.log("admin check:", data, error);
-    if (!data) { navigate("/"); return; }
-    setIsAdmin(true);
-    loadMetrics();
-    setLoading(false);
+    try {
+      const { data, error } = await supabase
+        .from("admins")
+        .select("id")
+        .eq("user_id", session!.user.id)
+        .maybeSingle();
+
+      console.log("admin check:", data, error);
+
+      if (!data) { navigate("/"); return; }
+
+      setIsAdmin(true);
+      await loadMetrics();
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadMetrics = async () => {

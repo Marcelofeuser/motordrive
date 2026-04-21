@@ -14,6 +14,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 
 type Provider = "uber" | "99";
 type Status = "disconnected" | "pending" | "connected" | "error" | "manual";
@@ -45,6 +47,7 @@ const STATUS_LABEL: Record<Status, { label: string; className: string }> = {
 };
 
 export default function Integracoes() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_integracoes"));
   const { user } = useAuth();
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -273,6 +276,7 @@ export default function Integracoes() {
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Integrações" subtitle="Plataformas conectadas" showBack />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_integracoes"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       {/* Uber */}
       <ProviderCard
@@ -507,6 +511,9 @@ function ProviderCard({
 function Field({
   label, value, onChange, type = "text",
 }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+  const tourSteps = [{ target: "h1", title: "Integrações 🔗", description: "Conecte o MotorDrive com outros apps." }];
+
+
   return (
     <div>
       <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</Label>
@@ -517,6 +524,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         className="h-9 text-sm"
       />
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="integracoes" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

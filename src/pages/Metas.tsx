@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import StatCard from "@/components/StatCard";
@@ -25,6 +27,7 @@ const defaultGoals: Goal[] = [
 ];
 
 export default function Metas() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_metas"));
   const { user } = useAuth();
   const [goals, setGoals] = useState<Goal[]>(defaultGoals);
   const [editing, setEditing] = useState<string | null>(null);
@@ -76,9 +79,13 @@ export default function Metas() {
     { label: "Km", pct: 72, color: "bg-secondary" },
   ];
 
+  const tourSteps = [{ target: "h1", title: "Suas Metas 🎯", description: "Defina metas diárias, semanais e mensais." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Metas" subtitle="Seus objetivos" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_metas"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         {goals.map((g) => (
@@ -135,6 +142,7 @@ export default function Metas() {
           ))}
         </div>
       </div>
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="metas" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

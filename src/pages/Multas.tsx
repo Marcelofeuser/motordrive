@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import SmartDocumentUpload from "@/components/SmartDocumentUpload";
@@ -13,6 +15,7 @@ interface Multa {
 }
 
 export default function Multas() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_multas"));
   const { user } = useAuth();
   const [multas, setMultas] = useState<Multa[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,9 +54,13 @@ export default function Multas() {
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
 
+  const tourSteps = [{ target: "h1", title: "Multas 🚨", description: "Registre multas e acompanhe prazos de recurso." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Multas & Alertas" subtitle="Controle completo" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_multas"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       <SmartDocumentUpload
         documentType="multa"
@@ -142,6 +149,7 @@ export default function Multas() {
           <p className="text-xs text-muted-foreground mt-1">Escaneie um auto de infração com IA</p>
         </div>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="multas" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import PageHeader from "@/components/PageHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +15,7 @@ interface MultaRow { date: string; valor: number; status: string; }
 interface JourneyRow { date: string; km_initial: number; km_final: number; }
 
 export default function Resumo() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_resumo"));
   const { user } = useAuth();
   const [period, setPeriod] = useState<Period>("month");
   const [earnings, setEarnings] = useState<EarningRow[]>([]);
@@ -93,9 +96,13 @@ export default function Resumo() {
 
   const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
+  const tourSteps = [{ target: "h1", title: "Resumo 📋", description: "Visão completa de todas as movimentações." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Resumo Total" subtitle="Visão completa" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_resumo"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       {/* Period selector */}
       <div className="flex gap-2 mb-6">
@@ -277,6 +284,7 @@ export default function Resumo() {
           </div>
         </>
       )}
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="resumo" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, DollarSign, Route, Fuel, Wrench, Target,
-  FileText, AlertTriangle, User, Zap, Car, Shield, TrendingUp, BarChart3,
+  FileText, AlertTriangle, User, Zap, Car, Shield, TrendingUp, BarChart3, PiggyBank,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +24,7 @@ const moreTabs = [
   { icon: AlertTriangle, label: "Multas", path: "/multas" },
   { icon: Shield, label: "CNH", path: "/cnh" },
   { icon: Car, label: "Veículo", path: "/veiculo" },
+  { icon: PiggyBank, label: "Reservas", path: "/reservas" },
   { icon: User, label: "Perfil", path: "/perfil" },
 ];
 

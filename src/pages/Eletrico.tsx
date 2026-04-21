@@ -1,3 +1,5 @@
+import TourTooltip from "@/components/TourTooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import PageHeader from "@/components/PageHeader";
 import { Zap, Battery, BatteryCharging, MapPin, Clock, Plus, Trash2, TrendingUp, TrendingDown, Home, Globe, ChevronDown, ChevronUp } from "lucide-react";
@@ -23,6 +25,7 @@ const chargingTypeLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function Eletrico() {
+  const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_eletrico"));
   const { user } = useAuth();
   const [usageEntries, setUsageEntries] = useState<UsageEntry[]>([]);
   const [chargingEntries, setChargingEntries] = useState<ChargingEntry[]>([]);
@@ -73,9 +76,13 @@ export default function Eletrico() {
   const deleteUsage = async (id: string) => { await supabase.from("electric_usage").delete().eq("id", id); setUsageEntries(prev => prev.filter(e => e.id !== id)); };
   const deleteCharging = async (id: string) => { await supabase.from("electric_charging").delete().eq("id", id); setChargingEntries(prev => prev.filter(e => e.id !== id)); };
 
+  const tourSteps = [{ target: "h1", title: "Elétrico ⚡", description: "Registre recargas e acompanhe eficiência em km/kWh." }];
+
+
   return (
     <div className="px-4 pt-8 pb-28 max-w-md mx-auto">
       <PageHeader title="Elétrico" subtitle="Gestão do veículo EV" />
+      <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_eletrico"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
       {/* Metrics */}
       <div className="grid grid-cols-3 gap-3 mb-6">
@@ -197,6 +204,7 @@ export default function Eletrico() {
           </div>
         </DialogContent>
       </Dialog>
+      {tourActive && <TourTooltip steps={tourSteps} tourKey="eletrico" onFinish={() => setTourActive(false)} />}
     </div>
   );
 }
