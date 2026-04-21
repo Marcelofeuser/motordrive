@@ -11,7 +11,7 @@ export default function Index() {
     if (user) {
       const rememberMe = localStorage.getItem("motordrive_remember") === "true";
       if (rememberMe) {
-        navigate("/", { replace: true });
+        navigate("/dashboard-home", { replace: true });
       } else {
         navigate("/login", { replace: true });
       }

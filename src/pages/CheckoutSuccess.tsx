@@ -53,7 +53,7 @@ export default function CheckoutSuccess() {
 
       <div className="space-y-3 w-full max-w-xs">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/dashboard-home")}
           className="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
         >
           Ir para o Dashboard

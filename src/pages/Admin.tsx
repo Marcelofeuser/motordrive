@@ -44,7 +44,7 @@ export default function Admin() {
 
       console.log("admin check:", data, error);
 
-      if (!data) { navigate("/"); return; }
+      if (!data) { navigate("/dashboard-home"); return; }
 
       setIsAdmin(true);
       await loadMetrics();
