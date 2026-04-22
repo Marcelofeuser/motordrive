@@ -31,7 +31,7 @@ export default function Admin() {
   const [vExpiry, setVExpiry] = useState("");
   const [vVitalicio, setVVitalicio] = useState(false);
   const [vLoading, setVLoading] = useState(false);
-  const [vResult, setVResult] = useState<{link: string; senha: string} | null>(null);
+  const [vResult, setVResult] = useState<{link: string; senha: string; email: string} | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -144,7 +144,7 @@ export default function Admin() {
       if (fnError || !data?.success) { toast.error("Erro: " + (fnError?.message || data?.error || "Tente novamente")); setVLoading(false); return; }
       
       const link = `https://motordrive.app/login`;
-      setVResult({ link, senha });
+      setVResult({ link, senha, email: vEmail });
       toast.success("Usuário criado com sucesso!");
       setVEmail("");
       setVExpiry("");
@@ -331,7 +331,7 @@ export default function Admin() {
                 <div className="space-y-3">
                   <div>
                     <p className="text-xs text-gray-400 mb-1">Email cadastrado</p>
-                    <p className="text-sm font-mono text-white">{vEmail || "—"}</p>
+                    <p className="text-sm font-mono text-white">{vResult?.email || "—"}</p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-400 mb-1">Senha provisória</p>
