@@ -137,34 +137,11 @@ export default function Admin() {
       const token = adminSession?.access_token;
       
       // Tenta criar usuário
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "apikey": serviceKey,
-        },
-        body: JSON.stringify({ email: vEmail, password: senha, email_confirm: true })
+      const { data, error: fnError } = await supabase.functions.invoke("create-voucher", {
+        body: { email: vEmail, password: senha, expiry: vExpiry, vitalicio: vVitalicio },
+        headers: { Authorization: "Bearer " + token },
       });
-      
-      const userData = await res.json();
-      const uid = userData.id;
-      
-      if (!uid) {
-        toast.error("Erro ao criar usuário: " + (userData.msg || "Tente novamente"));
-        setVLoading(false);
-        return;
-      }
-      
-      // Define plano Pro
-      const expiry = vVitalicio ? "2099-12-31T23:59:59+00:00" : new Date(vExpiry + "T23:59:59").toISOString();
-      await supabase.from("subscriptions").insert({
-        user_id: uid, plan: "pro", status: "active",
-        current_period_start: new Date().toISOString(),
-        current_period_end: expiry,
-        cancel_at_period_end: !vVitalicio,
-      });
-      await supabase.from("profiles").update({ plan: "pro" }).eq("user_id", uid);
+      if (fnError || !data?.success) { toast.error("Erro: " + (fnError?.message || data?.error || "Tente novamente")); setVLoading(false); return; }
       
       const link = `https://motordrive.app/login`;
       setVResult({ link, senha });
