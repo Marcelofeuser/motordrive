@@ -29,3 +29,6 @@ dist-ssr
 .env*
 test-*.mjs
 supabase/.temp
+setup-stripe.mjs
+setup-stripe.mjs
+setup-stripe-live.mjs
