@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2, Users, DollarSign, TrendingUp, Activity, LogOut, Shield, Trash2, Ban, CheckCircle, BarChart3, Settings } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, Activity, LogOut, Shield, Trash2, Ban, CheckCircle, BarChart3, Settings, Gift, Copy, Calendar } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserRow {
@@ -15,7 +15,7 @@ interface Metrics {
   newThisWeek: number; newThisMonth: number;
 }
 
-type Tab = "dashboard" | "users" | "settings";
+type Tab = "dashboard" | "users" | "vouchers" | "settings";
 
 export default function Admin() {
   const { user, session, signOut, loading: authLoading } = useAuth();
@@ -27,6 +27,11 @@ export default function Admin() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [vEmail, setVEmail] = useState("");
+  const [vExpiry, setVExpiry] = useState("");
+  const [vVitalicio, setVVitalicio] = useState(false);
+  const [vLoading, setVLoading] = useState(false);
+  const [vResult, setVResult] = useState<{link: string; senha: string} | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -118,6 +123,62 @@ export default function Admin() {
     toast.success("Usuário deletado!");
   };
 
+  const createVoucher = async () => {
+    if (!vEmail) { toast.error("Informe o email"); return; }
+    if (!vVitalicio && !vExpiry) { toast.error("Informe a data ou marque vitalício"); return; }
+    setVLoading(true);
+    setVResult(null);
+    try {
+      const senha = "Motor@" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      const serviceKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      // Cria usuário via edge function ou direto
+      const { data: { session: adminSession } } = await supabase.auth.getSession();
+      const token = adminSession?.access_token;
+      
+      // Tenta criar usuário
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "apikey": serviceKey,
+        },
+        body: JSON.stringify({ email: vEmail, password: senha, email_confirm: true })
+      });
+      
+      const userData = await res.json();
+      const uid = userData.id;
+      
+      if (!uid) {
+        toast.error("Erro ao criar usuário: " + (userData.msg || "Tente novamente"));
+        setVLoading(false);
+        return;
+      }
+      
+      // Define plano Pro
+      const expiry = vVitalicio ? "2099-12-31T23:59:59+00:00" : new Date(vExpiry + "T23:59:59").toISOString();
+      await supabase.from("subscriptions").insert({
+        user_id: uid, plan: "pro", status: "active",
+        current_period_start: new Date().toISOString(),
+        current_period_end: expiry,
+        cancel_at_period_end: !vVitalicio,
+      });
+      await supabase.from("profiles").update({ plan: "pro" }).eq("user_id", uid);
+      
+      const link = `https://motordrive.app/login`;
+      setVResult({ link, senha });
+      toast.success("Usuário criado com sucesso!");
+      setVEmail("");
+      setVExpiry("");
+      setVVitalicio(false);
+    } catch(e: any) {
+      toast.error(e.message || "Erro ao criar voucher");
+    } finally {
+      setVLoading(false);
+    }
+  };
+
   const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
   const filteredUsers = users.filter(u =>
@@ -154,6 +215,7 @@ export default function Admin() {
           {([
             { id: "dashboard", label: "Dashboard", icon: BarChart3 },
             { id: "users", label: "Usuários", icon: Users },
+            { id: "vouchers", label: "Vouchers", icon: Gift },
             { id: "settings", label: "Configurações", icon: Settings },
           ] as { id: Tab; label: string; icon: any }[]).map(t => (
             <button key={t.id} onClick={() => { setTab(t.id); if (t.id === "users") loadUsers(); }}
@@ -249,6 +311,76 @@ export default function Admin() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* VOUCHERS TAB */}
+        {tab === "vouchers" && (
+          <div className="max-w-xl">
+            <div className="bg-[#0d1117] border border-white/10 rounded-xl p-6 mb-4">
+              <h3 className="font-semibold mb-1 flex items-center gap-2"><Gift className="w-4 h-4 text-blue-400" /> Criar Acesso Pro</h3>
+              <p className="text-sm text-gray-400 mb-4">Crie um acesso Pro para um usuário com prazo configurável.</p>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-gray-400 uppercase tracking-wider">Email do usuário</label>
+                  <input value={vEmail} onChange={e => setVEmail(e.target.value)} placeholder="email@exemplo.com"
+                    className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="vitalicio" checked={vVitalicio} onChange={e => setVVitalicio(e.target.checked)}
+                    className="w-4 h-4 accent-blue-500" />
+                  <label htmlFor="vitalicio" className="text-sm text-gray-300 cursor-pointer">Acesso Vitalício</label>
+                </div>
+                {!vVitalicio && (
+                  <div>
+                    <label className="text-xs text-gray-400 uppercase tracking-wider flex items-center gap-1"><Calendar className="w-3 h-3" /> Data de expiração</label>
+                    <input type="date" value={vExpiry} onChange={e => setVExpiry(e.target.value)}
+                      min={new Date().toISOString().split("T")[0]}
+                      className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                  </div>
+                )}
+                <button onClick={createVoucher} disabled={vLoading}
+                  className="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                  {vLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Gift className="w-4 h-4" /> Gerar Acesso</>}
+                </button>
+              </div>
+            </div>
+
+            {vResult && (
+              <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
+                <h3 className="font-semibold text-green-400 mb-3">✅ Acesso criado!</h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Email cadastrado</p>
+                    <p className="text-sm font-mono text-white">{vEmail || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Senha provisória</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono text-yellow-400 flex-1">{vResult.senha}</p>
+                      <button onClick={() => { navigator.clipboard.writeText(vResult.senha); toast.success("Copiado!"); }}
+                        className="text-gray-400 hover:text-white"><Copy className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Link de acesso</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono text-blue-400 flex-1 break-all">{vResult.link}</p>
+                      <button onClick={() => { navigator.clipboard.writeText(vResult.link); toast.success("Copiado!"); }}
+                        className="text-gray-400 hover:text-white"><Copy className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                  <div className="bg-black/20 rounded-lg p-3 mt-2">
+                    <p className="text-xs text-gray-400 mb-1">Mensagem para enviar:</p>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      {"Olá! Seu acesso ao MotorDrive Pro foi criado.\n\nSite: https://motordrive.app\nEmail: " + (vEmail || "") + "\nSenha: " + vResult.senha + "\n\nRecomendamos trocar a senha após o primeiro acesso."}
+                    </p>
+                    <button onClick={() => { navigator.clipboard.writeText("Olá! Seu acesso ao MotorDrive Pro foi criado.\n\nSite: https://motordrive.app\nEmail: " + (vEmail||"") + "\nSenha: " + vResult.senha + "\n\nRecomendamos trocar a senha após o primeiro acesso."); toast.success("Mensagem copiada!"); }}
+                      className="mt-2 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"><Copy className="w-3 h-3" /> Copiar mensagem</button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
