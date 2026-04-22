@@ -144,7 +144,7 @@ export default function Admin() {
       if (fnError || !data?.success) { toast.error("Erro: " + (fnError?.message || data?.error || "Tente novamente")); setVLoading(false); return; }
       
       const link = `https://motordrive.app/login`;
-      setVResult({ link, senha, email: vEmail });
+      setVResult({ link, senha, email: email || vEmail || "N/A" });
       toast.success("Usuário criado com sucesso!");
       setVEmail("");
       setVExpiry("");
