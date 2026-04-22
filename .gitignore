@@ -32,3 +32,5 @@ supabase/.temp
 setup-stripe.mjs
 setup-stripe.mjs
 setup-stripe-live.mjs
+setup-stripe.mjs
+setup-stripe-live.mjs
