@@ -1,14 +1,14 @@
 {
   "name": "MotorDrive",
   "short_name": "MotorDrive",
-  "description": "Controle financeiro e operacional para motoristas de app.",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f172a",
   "theme_color": "#facc15",
+  "background_color": "#0f172a",
+  "description": "Controle financeiro e operacional para motoristas de app.",
   "lang": "pt-BR",
+  "id": "/",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -22,5 +22,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "/"
 }
