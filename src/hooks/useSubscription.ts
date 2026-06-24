@@ -6,7 +6,7 @@ interface Subscription {
   status: string;
   plan: string;
   current_period_end: string | null;
-  trial_end: string | null;
+
 }
 
 export function useSubscription() {
@@ -18,7 +18,7 @@ export function useSubscription() {
     if (!user) { setLoading(false); return; }
     supabase
       .from("subscriptions")
-      .select("status, plan, current_period_end, trial_end")
+      .select("status, plan, current_period_end")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
