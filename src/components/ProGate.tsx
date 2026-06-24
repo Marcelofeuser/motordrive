@@ -9,11 +9,12 @@ export function ProGate({ children }: { children: React.ReactNode }) {
   const { hasProAccess, loading } = useSubscription();
   const navigate = useNavigate();
   const isPlanos = window.location.pathname === "/planos";
+  const isLogin = window.location.pathname === "/login" || window.location.pathname === "/auth";
   const isCheckout = window.location.pathname.startsWith("/checkout");
 
   useEffect(() => {
     if (loading) return;
-    if (!hasProAccess && !isPlanos && !isCheckout) {
+    if (!hasProAccess && !isPlanos && !isCheckout && !isLogin) {
       navigate("/planos");
     }
   }, [hasProAccess, loading, isPlanos, isCheckout]);
