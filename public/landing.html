@@ -423,13 +423,7 @@
       z-index: 1;
     }
 
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      max-width: 760px;
-      margin: 0 auto;
-    }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
 
     .pricing-card {
       background: linear-gradient(135deg, rgba(16,23,38,.90), rgba(12,18,30,.94));
@@ -706,7 +700,7 @@
       .hero-content { grid-template-columns: 1fr; gap: 42px; }
       .hero-visual { order: -1; }
       .features-grid { grid-template-columns: 1fr 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; max-width: 460px; }
+      .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
       .steps { grid-template-columns: 1fr 1fr; }
       .steps::before { display: none; }
     }
