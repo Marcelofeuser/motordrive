@@ -1,3 +1,4 @@
+import { ProGate } from "./components/ProGate";
 import { VersionChecker } from "./components/VersionChecker";
 import { UpdateBanner } from "./components/UpdateBanner";
 import Ajuda from "./pages/legal/Ajuda";
@@ -112,7 +113,7 @@ const App = () => (
               <Route path="/login" element={<AuthRoute />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/*" element={<ProtectedRoutes />} />
+              <Route path="/*" element={<ProGate><ProtectedRoutes /></ProGate>} />
             </Routes>
           </div>
         </AuthProvider>
