@@ -26,3 +26,4 @@ test-signup.mjs
 .env.vercel.*
 .vercel
 .env*.local
+apk/
