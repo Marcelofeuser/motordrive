@@ -3,8 +3,8 @@ import Stripe from "https://esm.sh/stripe@14";
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 
 const PRICES = {
-  monthly: "price_1TlpbdRwgxkcKRlyGfzsdI5t",
-  yearly: "price_1TlpbgRwgxkcKRlyHh58jEzU",
+  monthly: "price_1TlqETE2JgwvDIdFYXxxrYbA",
+  yearly: "price_1TlqHwE2JgwvDIdFeFnFpO3c",
 };
 
 Deno.serve(async (req) => {
