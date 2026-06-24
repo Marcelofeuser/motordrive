@@ -1,3 +1,4 @@
+import { VersionChecker } from "./components/VersionChecker";
 import { UpdateBanner } from "./components/UpdateBanner";
 import Ajuda from "./pages/legal/Ajuda";
 import Suporte from "./pages/legal/Suporte";
@@ -116,6 +117,7 @@ const App = () => (
           </div>
         </AuthProvider>
       <UpdateBanner />
+<VersionChecker />
 </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
