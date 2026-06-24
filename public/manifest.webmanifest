@@ -4,7 +4,7 @@
   "start_url": "/login",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#facc15",
+  "theme_color": "#0f172a",
   "background_color": "#0f172a",
   "description": "Controle financeiro para motoristas",
   "lang": "pt-BR",
@@ -14,13 +14,25 @@
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

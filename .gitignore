@@ -21,3 +21,6 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+setup-stripe.mjs
+test-signup.mjs
+.env.vercel.*
