@@ -108,7 +108,7 @@ export default function Planos() {
       <div className="max-w-sm mx-auto px-4 space-y-4">
         <div className="bg-[#0d1117] border border-white/10 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div><h2 className="font-bold text-lg">Free</h2><p className="text-xs text-gray-500 mt-0.5">Para comecar</p></div>
+            <div><h2 className="font-bold text-lg">Free</h2><p className="text-xs text-gray-500 mt-0.5">Experimente gratis</p></div>
             <div className="text-right"><p className="text-2xl font-bold">R$ 0</p><p className="text-xs text-gray-500">para sempre</p></div>
           </div>
           <div className="space-y-2.5 mb-6">
