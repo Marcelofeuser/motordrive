@@ -5,8 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Check, Zap, Shield, BarChart3, Clock, Star, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const PRICE_MONTHLY = "price_1TOX5pE2JgwvDIdFE2UHHtVv";
-const PRICE_ANNUAL  = "price_1TOX5pE2JgwvDIdFT9NQ5C1Q";
+const PRICE_MONTHLY = "price_1TlpbdRwgxkcKRlyGfzsdI5t";
+const PRICE_ANNUAL  = "price_1TlpbgRwgxkcKRlyHh58jEzU";
 
 interface Subscription {
   plan: string;
@@ -133,9 +133,9 @@ export default function Planos() {
             </div>
             <div className="text-right">
               {billing === "monthly" ? (
-                <><p className="text-2xl font-bold">R$ 39<span className="text-base font-semibold">,90</span></p><p className="text-xs text-gray-500">por mes</p></>
+                <><p className="text-2xl font-bold">R$ 19<span className="text-base font-semibold">,90</span></p><p className="text-xs text-gray-500">por mes</p></>
               ) : (
-                <><p className="text-2xl font-bold">R$ 33<span className="text-base font-semibold">,25</span></p><p className="text-xs text-gray-500">por mes · R$ 399/ano</p></>
+                <><p className="text-2xl font-bold">R$ 16<span className="text-base font-semibold">,58</span></p><p className="text-xs text-gray-500">por mes · R$ 199/ano</p></>
               )}
             </div>
           </div>
