@@ -5,8 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Check, Zap, Shield, BarChart3, Clock, Star, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const PRICE_MONTHLY = "price_1TlpbdRwgxkcKRlyGfzsdI5t";
-const PRICE_ANNUAL  = "price_1TlpbgRwgxkcKRlyHh58jEzU";
+const PRICE_MONTHLY = "price_1TOX5pE2JgwvDIdFE2UHHtVv";
+const PRICE_ANNUAL  = "price_1TOX5pE2JgwvDIdFT9NQ5C1Q";
 
 interface Subscription {
   plan: string;
