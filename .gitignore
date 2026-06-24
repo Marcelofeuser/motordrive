@@ -24,3 +24,5 @@ Thumbs.db
 setup-stripe.mjs
 test-signup.mjs
 .env.vercel.*
+.vercel
+.env*.local

@@ -1,3 +1,4 @@
+import { UpdateBanner } from "./components/UpdateBanner";
 import Ajuda from "./pages/legal/Ajuda";
 import Suporte from "./pages/legal/Suporte";
 import FAQ from "./pages/legal/FAQ";
@@ -114,7 +115,8 @@ const App = () => (
             </Routes>
           </div>
         </AuthProvider>
-      </BrowserRouter>
+      <UpdateBanner />
+</BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
