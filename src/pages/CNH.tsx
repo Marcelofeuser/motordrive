@@ -21,8 +21,9 @@ export default function CNH() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
-    supabase.from("cnh").select("*").eq("user_id", user.id).maybeSingle()
+    if (!user) { setLoading(false); return; }
+    setLoading(true);
+    supabase.from("cnh").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => { if (data) setCnhData(data); setLoading(false); });
   }, [user]);
 
@@ -30,11 +31,13 @@ export default function CNH() {
     if (!user) return;
     const payload = { user_id: user.id, ...data };
     const existing = await supabase.from("cnh").select("id").eq("user_id", user.id).maybeSingle();
+    let error;
     if (existing.data) {
-      await supabase.from("cnh").update(payload).eq("user_id", user.id);
+      ({ error } = await supabase.from("cnh").update(payload).eq("user_id", user.id));
     } else {
-      await supabase.from("cnh").insert(payload);
+      ({ error } = await supabase.from("cnh").insert(payload));
     }
+    if (error) { toast({ title: "Erro ao salvar CNH", description: error.message, variant: "destructive" }); return; }
     setCnhData(data as CNHData);
     toast({ title: "CNH salva com sucesso!" });
   };

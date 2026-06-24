@@ -1,10 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, DollarSign, Route, Fuel, Wrench, Target,
-  FileText, AlertTriangle, User, Zap, Car, Shield, TrendingUp, BarChart3, PiggyBank,
+  FileText, AlertTriangle, User, Zap, Car, Shield, TrendingUp, BarChart3, PiggyBank, ShieldCheck
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mainTabs = [
   { icon: LayoutDashboard, label: "Início", path: "/" },
@@ -31,7 +33,22 @@ const moreTabs = [
 export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showMore, setShowMore] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from("admins")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setIsAdmin(true);
+        });
+    }
+  }, [user]);
 
   const isActive = (path: string) => {
     if (path === "__more__") return false;
@@ -39,6 +56,11 @@ export default function BottomNav() {
   };
 
   const isMoreActive = moreTabs.some((t) => location.pathname === t.path);
+
+  // Adiciona a aba Admin apenas se for administrador, antes de "Perfil"
+  const finalMoreTabs = isAdmin 
+    ? [...moreTabs.slice(0, -1), { icon: ShieldCheck, label: "Admin", path: "/admin" }, moreTabs[moreTabs.length - 1]]
+    : moreTabs;
 
   return (
     <>
@@ -60,12 +82,16 @@ export default function BottomNav() {
               className="fixed bottom-20 left-0 right-0 z-50 px-4 pb-2"
             >
               <div className="glass-card p-4 grid grid-cols-4 gap-3">
-                {moreTabs.map((tab) => (
+                {finalMoreTabs.map((tab) => (
                   <button
                     key={tab.path}
                     onClick={() => { navigate(tab.path); setShowMore(false); }}
                     className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-colors ${
-                      isActive(tab.path) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                      isActive(tab.path) 
+                        ? "bg-primary/10 text-primary" 
+                        : tab.label === "Admin"
+                          ? "text-yellow-400 hover:text-yellow-300"
+                          : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <tab.icon className="w-5 h-5" />

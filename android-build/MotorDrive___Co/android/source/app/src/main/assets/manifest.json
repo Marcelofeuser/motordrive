@@ -1,0 +1,25 @@
+{
+    "dir": "ltr",
+    "lang": "pt-BR",
+    "name": "MotorDrive - Controle do Motorista",
+    "short_name": "MotorDrive - Co",
+    "scope": "/",
+    "display": "browser",
+    "start_url": "https://motordrive.app/",
+    "background_color": "transparent",
+    "theme_color": "transparent",
+    "description": "App completo para motoristas de aplicativo: faturamento, km, combustível, manutenção e lucro real.",
+    "orientation": "any",
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "16x16 32x32"
+        },
+        {
+            "src": "/favicon.ico?v=2",
+            "sizes": "16x16 32x32"
+        }
+    ]
+}

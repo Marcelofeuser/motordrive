@@ -81,7 +81,7 @@ export default function EVCharts({ usageEntries, chargingEntries }: Props) {
             </p>
           </div>
           <div className="h-28">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={efficiencyData}>
                 <defs>
                   <linearGradient id="effGrad" x1="0" y1="0" x2="0" y2="1">
@@ -108,7 +108,7 @@ export default function EVCharts({ usageEntries, chargingEntries }: Props) {
         <div>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-2">KM vs Consumo Bateria</p>
           <div className="h-28">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={efficiencyData} barGap={2}>
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(240 5% 65%)" }} />
                 <YAxis hide />
@@ -134,7 +134,7 @@ export default function EVCharts({ usageEntries, chargingEntries }: Props) {
             </p>
           </div>
           <div className="h-28">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={costData} barCategoryGap="20%">
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(240 5% 65%)" }} />
                 <YAxis hide />

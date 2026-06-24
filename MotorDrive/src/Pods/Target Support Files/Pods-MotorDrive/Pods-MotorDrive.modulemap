@@ -1,0 +1,6 @@
+framework module Pods_MotorDrive {
+  umbrella header "Pods-MotorDrive-umbrella.h"
+
+  export *
+  module * { export * }
+}

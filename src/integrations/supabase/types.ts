@@ -16,25 +16,103 @@ export type Database = {
     Tables: {
       account_deletion_requests: {
         Row: {
+          email: string | null
           id: string
-          user_id: string
           requested_at: string
-          reason: string | null
           status: string
+          user_id: string
         }
         Insert: {
+          email?: string | null
           id?: string
-          user_id: string
           requested_at?: string
-          reason?: string | null
           status?: string
+          user_id: string
         }
         Update: {
+          email?: string | null
+          id?: string
+          requested_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admins: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
           id?: string
           user_id?: string
-          requested_at?: string
-          reason?: string | null
-          status?: string
+        }
+        Relationships: []
+      }
+      cnh: {
+        Row: {
+          categoria: string | null
+          cpf: string | null
+          created_at: string
+          data_nascimento: string | null
+          ear: string | null
+          file_path: string | null
+          file_url: string | null
+          id: string
+          nome: string | null
+          numero_registro: string | null
+          observacoes: string | null
+          orgao_emissor: string | null
+          primeira_habilitacao: string | null
+          updated_at: string
+          user_id: string
+          validade: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          cpf?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          ear?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          nome?: string | null
+          numero_registro?: string | null
+          observacoes?: string | null
+          orgao_emissor?: string | null
+          primeira_habilitacao?: string | null
+          updated_at?: string
+          user_id: string
+          validade?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          cpf?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          ear?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          nome?: string | null
+          numero_registro?: string | null
+          observacoes?: string | null
+          orgao_emissor?: string | null
+          primeira_habilitacao?: string | null
+          updated_at?: string
+          user_id?: string
+          validade?: string | null
         }
         Relationships: []
       }
@@ -42,11 +120,13 @@ export type Database = {
         Row: {
           bonus: number
           bruto: number
+          corridas: number
           created_at: string
           date: string
           dinheiro: number
           gorjetas: number
           id: string
+          outros: number
           pedagio: number
           platform: string
           taxas: number
@@ -56,11 +136,13 @@ export type Database = {
         Insert: {
           bonus?: number
           bruto?: number
+          corridas?: number
           created_at?: string
           date?: string
           dinheiro?: number
           gorjetas?: number
           id?: string
+          outros?: number
           pedagio?: number
           platform?: string
           taxas?: number
@@ -70,15 +152,50 @@ export type Database = {
         Update: {
           bonus?: number
           bruto?: number
+          corridas?: number
           created_at?: string
           date?: string
           dinheiro?: number
           gorjetas?: number
           id?: string
+          outros?: number
           pedagio?: number
           platform?: string
           taxas?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      earnings_imports: {
+        Row: {
+          created_at: string
+          extracted_payload: Json | null
+          file_name: string | null
+          file_url: string | null
+          id: string
+          provider: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          extracted_payload?: Json | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          provider?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          extracted_payload?: Json | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          provider?: string
+          status?: string
           user_id?: string
         }
         Relationships: []
@@ -284,6 +401,54 @@ export type Database = {
         }
         Relationships: []
       }
+      integrations: {
+        Row: {
+          access_token: string | null
+          account_label: string | null
+          created_at: string
+          id: string
+          last_synced_at: string | null
+          metadata: Json | null
+          provider: string
+          refresh_token: string | null
+          scopes: string | null
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          account_label?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          metadata?: Json | null
+          provider: string
+          refresh_token?: string | null
+          scopes?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          account_label?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          metadata?: Json | null
+          provider?: string
+          refresh_token?: string | null
+          scopes?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       journeys: {
         Row: {
           created_at: string
@@ -320,177 +485,227 @@ export type Database = {
         }
         Relationships: []
       }
-      earnings_imports: {
+      lucro_real: {
         Row: {
-          id: string
-          user_id: string
-          provider: string
-          storage_path: string | null
-          original_filename: string | null
-          mime_type: string | null
-          status: string
-          extracted_payload: Json | null
-          error_message: string | null
+          category: string
           created_at: string
-          updated_at: string
+          id: string
+          label: string
+          type: string
+          user_id: string
+          value: number
         }
         Insert: {
-          id?: string
-          user_id: string
-          provider?: string
-          storage_path?: string | null
-          original_filename?: string | null
-          mime_type?: string | null
-          status?: string
-          extracted_payload?: Json | null
-          error_message?: string | null
+          category?: string
           created_at?: string
-          updated_at?: string
+          id?: string
+          label: string
+          type: string
+          user_id: string
+          value?: number
         }
         Update: {
-          id?: string
-          user_id?: string
-          provider?: string
-          storage_path?: string | null
-          original_filename?: string | null
-          mime_type?: string | null
-          status?: string
-          extracted_payload?: Json | null
-          error_message?: string | null
+          category?: string
           created_at?: string
-          updated_at?: string
+          id?: string
+          label?: string
+          type?: string
+          user_id?: string
+          value?: number
         }
         Relationships: []
       }
-      integrations: {
+      maintenance: {
         Row: {
-          id: string
-          user_id: string
-          provider: string
-          status: string
-          account_label: string | null
-          last_synced_at: string | null
+          category: string
           created_at: string
+          date: string
+          id: string
+          km: number | null
+          obs: string | null
+          tipo: string | null
           updated_at: string
+          user_id: string
+          valor: number
         }
         Insert: {
-          id?: string
-          user_id: string
-          provider: string
-          status?: string
-          account_label?: string | null
-          last_synced_at?: string | null
+          category?: string
           created_at?: string
+          date?: string
+          id?: string
+          km?: number | null
+          obs?: string | null
+          tipo?: string | null
           updated_at?: string
+          user_id: string
+          valor?: number
         }
         Update: {
-          id?: string
-          user_id?: string
-          provider?: string
-          status?: string
-          account_label?: string | null
-          last_synced_at?: string | null
+          category?: string
           created_at?: string
+          date?: string
+          id?: string
+          km?: number | null
+          obs?: string | null
+          tipo?: string | null
           updated_at?: string
+          user_id?: string
+          valor?: number
         }
         Relationships: []
       }
       manual_earnings: {
         Row: {
-          id: string
-          user_id: string
-          provider: string
-          trip_date: string
-          gross_earnings: number
-          net_earnings: number
-          bonuses: number
-          fees: number
-          online_hours: number
-          source: string
-          import_id: string | null
+          bonuses: number | null
           created_at: string
-          updated_at: string
+          fees: number | null
+          gross_earnings: number | null
+          id: string
+          net_earnings: number | null
+          notes: string | null
+          online_hours: number | null
+          provider: string
+          source_import_id: string | null
+          trip_date: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          provider?: string
-          trip_date: string
-          gross_earnings?: number
-          net_earnings?: number
-          bonuses?: number
-          fees?: number
-          online_hours?: number
-          source?: string
-          import_id?: string | null
+          bonuses?: number | null
           created_at?: string
-          updated_at?: string
+          fees?: number | null
+          gross_earnings?: number | null
+          id?: string
+          net_earnings?: number | null
+          notes?: string | null
+          online_hours?: number | null
+          provider?: string
+          source_import_id?: string | null
+          trip_date?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          provider?: string
-          trip_date?: string
-          gross_earnings?: number
-          net_earnings?: number
-          bonuses?: number
-          fees?: number
-          online_hours?: number
-          source?: string
-          import_id?: string | null
+          bonuses?: number | null
           created_at?: string
-          updated_at?: string
+          fees?: number | null
+          gross_earnings?: number | null
+          id?: string
+          net_earnings?: number | null
+          notes?: string | null
+          online_hours?: number | null
+          provider?: string
+          source_import_id?: string | null
+          trip_date?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manual_earnings_source_import_id_fkey"
+            columns: ["source_import_id"]
+            isOneToOne: false
+            referencedRelation: "earnings_imports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      multas: {
+        Row: {
+          auto_infracao: string | null
+          created_at: string
+          data_infracao: string | null
+          desconto_percent: number | null
+          descricao: string | null
+          file_path: string | null
+          file_url: string | null
+          id: string
+          raw_data: Json | null
+          status: string | null
+          user_id: string
+          valor: number | null
+          vencimento: string | null
+        }
+        Insert: {
+          auto_infracao?: string | null
+          created_at?: string
+          data_infracao?: string | null
+          desconto_percent?: number | null
+          descricao?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          raw_data?: Json | null
+          status?: string | null
+          user_id: string
+          valor?: number | null
+          vencimento?: string | null
+        }
+        Update: {
+          auto_infracao?: string | null
+          created_at?: string
+          data_infracao?: string | null
+          desconto_percent?: number | null
+          descricao?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          raw_data?: Json | null
+          status?: string | null
+          user_id?: string
+          valor?: number | null
+          vencimento?: string | null
         }
         Relationships: []
       }
       platform_imports: {
         Row: {
-          id: string
-          user_id: string
-          provider: string
-          trip_date: string
-          gross_earnings: number
-          net_earnings: number
           bonuses: number
+          created_at: string
           fees: number
+          gross_earnings: number
+          id: string
+          net_earnings: number
+          notes: string | null
           online_hours: number
+          provider: string
+          raw_data: Json | null
           source: string
           source_file: string | null
-          raw_data: Json | null
-          created_at: string
+          trip_date: string
           updated_at: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          provider?: string
-          trip_date: string
-          gross_earnings?: number
-          net_earnings?: number
           bonuses?: number
+          created_at?: string
           fees?: number
+          gross_earnings?: number
+          id?: string
+          net_earnings?: number
+          notes?: string | null
           online_hours?: number
+          provider?: string
+          raw_data?: Json | null
           source?: string
           source_file?: string | null
-          raw_data?: Json | null
-          created_at?: string
+          trip_date: string
           updated_at?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          provider?: string
-          trip_date?: string
-          gross_earnings?: number
-          net_earnings?: number
           bonuses?: number
+          created_at?: string
           fees?: number
+          gross_earnings?: number
+          id?: string
+          net_earnings?: number
+          notes?: string | null
           online_hours?: number
+          provider?: string
+          raw_data?: Json | null
           source?: string
           source_file?: string | null
-          raw_data?: Json | null
-          created_at?: string
+          trip_date?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -500,6 +715,9 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          plan: string
+          trial_ends_at: string | null
+          trial_used: boolean
           updated_at: string
           user_id: string
         }
@@ -508,6 +726,9 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          plan?: string
+          trial_ends_at?: string | null
+          trial_used?: boolean
           updated_at?: string
           user_id: string
         }
@@ -516,6 +737,143 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          plan?: string
+          trial_ends_at?: string | null
+          trial_used?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reservas: {
+        Row: {
+          ativo: boolean
+          automatico: boolean
+          cor: string
+          created_at: string
+          emoji: string
+          frequencia: string
+          id: string
+          meta: number | null
+          nome: string
+          saldo: number
+          tipo_aporte: string
+          updated_at: string
+          user_id: string
+          valor_aporte: number
+        }
+        Insert: {
+          ativo?: boolean
+          automatico?: boolean
+          cor?: string
+          created_at?: string
+          emoji?: string
+          frequencia?: string
+          id?: string
+          meta?: number | null
+          nome?: string
+          saldo?: number
+          tipo_aporte?: string
+          updated_at?: string
+          user_id: string
+          valor_aporte?: number
+        }
+        Update: {
+          ativo?: boolean
+          automatico?: boolean
+          cor?: string
+          created_at?: string
+          emoji?: string
+          frequencia?: string
+          id?: string
+          meta?: number | null
+          nome?: string
+          saldo?: number
+          tipo_aporte?: string
+          updated_at?: string
+          user_id?: string
+          valor_aporte?: number
+        }
+        Relationships: []
+      }
+      reservas_historico: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          reserva_id: string
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          reserva_id: string
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          reserva_id?: string
+          tipo?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservas_historico_reserva_id_fkey"
+            columns: ["reserva_id"]
+            isOneToOne: false
+            referencedRelation: "reservas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_price_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -523,64 +881,139 @@ export type Database = {
       }
       user_settings: {
         Row: {
-          id: string
-          user_id: string
-          notifications_enabled: boolean
-          cnh_alert_enabled: boolean
-          fines_alert_enabled: boolean
-          discount_alert_enabled: boolean
-          ipva_alert_enabled: boolean
-          insurance_alert_enabled: boolean
-          maintenance_alert_enabled: boolean
           ai_extract_documents: boolean
           ai_financial_copilot: boolean
-          default_state: string | null
-          default_discount_percent: number | null
-          theme: string | null
-          language: string | null
-          currency: string | null
+          cnh_alert_enabled: boolean
           created_at: string
+          currency: string | null
+          default_discount_percent: number | null
+          default_state: string | null
+          discount_alert_enabled: boolean
+          fines_alert_enabled: boolean
+          id: string
+          insurance_alert_enabled: boolean
+          ipva_alert_enabled: boolean
+          language: string | null
+          maintenance_alert_enabled: boolean
+          notifications_enabled: boolean
+          theme: string | null
           updated_at: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          notifications_enabled?: boolean
-          cnh_alert_enabled?: boolean
-          fines_alert_enabled?: boolean
-          discount_alert_enabled?: boolean
-          ipva_alert_enabled?: boolean
-          insurance_alert_enabled?: boolean
-          maintenance_alert_enabled?: boolean
           ai_extract_documents?: boolean
           ai_financial_copilot?: boolean
-          default_state?: string | null
-          default_discount_percent?: number | null
-          theme?: string | null
-          language?: string | null
-          currency?: string | null
+          cnh_alert_enabled?: boolean
           created_at?: string
+          currency?: string | null
+          default_discount_percent?: number | null
+          default_state?: string | null
+          discount_alert_enabled?: boolean
+          fines_alert_enabled?: boolean
+          id?: string
+          insurance_alert_enabled?: boolean
+          ipva_alert_enabled?: boolean
+          language?: string | null
+          maintenance_alert_enabled?: boolean
+          notifications_enabled?: boolean
+          theme?: string | null
           updated_at?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          notifications_enabled?: boolean
-          cnh_alert_enabled?: boolean
-          fines_alert_enabled?: boolean
-          discount_alert_enabled?: boolean
-          ipva_alert_enabled?: boolean
-          insurance_alert_enabled?: boolean
-          maintenance_alert_enabled?: boolean
           ai_extract_documents?: boolean
           ai_financial_copilot?: boolean
-          default_state?: string | null
-          default_discount_percent?: number | null
-          theme?: string | null
-          language?: string | null
-          currency?: string | null
+          cnh_alert_enabled?: boolean
           created_at?: string
+          currency?: string | null
+          default_discount_percent?: number | null
+          default_state?: string | null
+          discount_alert_enabled?: boolean
+          fines_alert_enabled?: boolean
+          id?: string
+          insurance_alert_enabled?: boolean
+          ipva_alert_enabled?: boolean
+          language?: string | null
+          maintenance_alert_enabled?: boolean
+          notifications_enabled?: boolean
+          theme?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      veiculo: {
+        Row: {
+          ano_fabricacao: string | null
+          ano_modelo: string | null
+          categoria: string | null
+          chassi: string | null
+          cilindrada: string | null
+          combustivel: string | null
+          cor: string | null
+          cpf_cnpj: string | null
+          created_at: string
+          estado: string | null
+          file_path: string | null
+          file_url: string | null
+          id: string
+          marca: string | null
+          modelo: string | null
+          municipio: string | null
+          placa: string | null
+          potencia: string | null
+          proprietario: string | null
+          renavam: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ano_fabricacao?: string | null
+          ano_modelo?: string | null
+          categoria?: string | null
+          chassi?: string | null
+          cilindrada?: string | null
+          combustivel?: string | null
+          cor?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string
+          estado?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          marca?: string | null
+          modelo?: string | null
+          municipio?: string | null
+          placa?: string | null
+          potencia?: string | null
+          proprietario?: string | null
+          renavam?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ano_fabricacao?: string | null
+          ano_modelo?: string | null
+          categoria?: string | null
+          chassi?: string | null
+          cilindrada?: string | null
+          combustivel?: string | null
+          cor?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string
+          estado?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          marca?: string | null
+          modelo?: string | null
+          municipio?: string | null
+          placa?: string | null
+          potencia?: string | null
+          proprietario?: string | null
+          renavam?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -137,7 +137,7 @@ export default function Relatorios() {
             <div className="glass-card p-5 mb-6">
               <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Faturamento por dia</h3>
               <div className="h-36">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={dailyData} barCategoryGap="20%">
                     <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "hsl(240 5% 65%)" }} interval={Math.floor(dailyData.length / 6)} />
                     <YAxis hide />

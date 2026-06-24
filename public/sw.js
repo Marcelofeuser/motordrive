@@ -1,4 +1,4 @@
-const CACHE_NAME = 'motordrive-v1';
+const CACHE_NAME = 'motordrive-v3';
 const ASSETS = [
   '/',
   '/manifest.webmanifest',
@@ -25,13 +25,14 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  // Network-first: tenta rede primeiro, fallback para cache
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      }).catch(() => caches.match('/'));
+    fetch(event.request).then((response) => {
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+      return response;
+    }).catch(() => {
+      return caches.match(event.request).then((cached) => cached || caches.match('/'));
     })
   );
 });

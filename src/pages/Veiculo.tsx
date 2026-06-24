@@ -3,7 +3,8 @@ import { HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import SmartDocumentUpload from "@/components/SmartDocumentUpload";
-import { Car, Fuel, Hash, MapPin, Loader2 } from "lucide-react";
+import { Car, Fuel, Hash, MapPin, Loader2, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -21,22 +22,55 @@ export default function Veiculo() {
   const { user } = useAuth();
   const [veiculoData, setVeiculoData] = useState<VeiculoData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [placaInput, setPlacaInput] = useState("");
+  const [consultando, setConsultando] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
-    supabase.from("veiculo").select("*").eq("user_id", user.id).maybeSingle()
+    if (!user) { setLoading(false); return; }
+    setLoading(true);
+    supabase.from("veiculo").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => { if (data) setVeiculoData(data); setLoading(false); });
   }, [user]);
+
+  const consultarPlaca = async () => {
+    if (!user || !placaInput) return;
+    setConsultando(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("consultar-placa", {
+        body: { placa: placaInput, tipo: "veiculo" },
+      });
+      if (error) throw error;
+      if (data?.status !== "ok") throw new Error(data?.mensagem || "Erro na consulta");
+      const v = data.dados.informacoes_veiculo.dados_veiculo;
+      const t = data.dados.informacoes_veiculo.dados_tecnicos;
+      const extracted: Record<string, unknown> = {
+        marca: v.marca, modelo: v.modelo,
+        ano_fabricacao: v.ano_fabricacao, ano_modelo: v.ano_modelo,
+        placa: v.placa, cor: v.cor, combustivel: v.combustivel,
+        municipio: v.municipio, estado: v.uf_municipio,
+        potencia: t?.potencia, cilindrada: t?.cilindradas,
+      };
+      await handleExtracted(extracted);
+    } catch (err: any) {
+      toast({ title: "Erro na consulta", description: err.message, variant: "destructive" });
+    } finally {
+      setConsultando(false);
+    }
+  };
+
+  
 
   const handleExtracted = async (data: Record<string, unknown>) => {
     if (!user) return;
     const payload = { user_id: user.id, ...data };
     const existing = await supabase.from("veiculo").select("id").eq("user_id", user.id).maybeSingle();
+    let error;
     if (existing.data) {
-      await supabase.from("veiculo").update(payload).eq("user_id", user.id);
+      ({ error } = await supabase.from("veiculo").update(payload).eq("user_id", user.id));
     } else {
-      await supabase.from("veiculo").insert(payload);
+      ({ error } = await supabase.from("veiculo").insert(payload));
     }
+    if (error) { toast({ title: "Erro ao salvar veículo", description: error.message, variant: "destructive" }); return; }
     setVeiculoData(data as VeiculoData);
     toast({ title: "Veículo salvo com sucesso!" });
   };
@@ -51,6 +85,40 @@ export default function Veiculo() {
       <PageHeader title="Veículo" subtitle="Dados do carro" />
       <div className="flex justify-end -mt-2 mb-2"><button onClick={() => { localStorage.removeItem("tour_veiculo"); setTourActive(true); }} className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"><HelpCircle className="w-4 h-4" /> Ajuda</button></div>
 
+      <div className="flex gap-2 mb-3">
+        <Input
+          placeholder="Digite a placa (ex: ONQ7019)"
+          value={placaInput}
+          onChange={(e) => setPlacaInput(e.target.value.toUpperCase())}
+          className="bg-muted border-border font-mono"
+          maxLength={8}
+        />
+        <button
+          onClick={consultarPlaca}
+          disabled={consultando || !placaInput}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
+        >
+          {consultando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          {consultando ? "..." : "Consultar"}
+        </button>
+      </div>
+      <div className="flex gap-2 mb-3">
+        <Input
+          placeholder="Digite a placa (ex: ONQ7019)"
+          value={placaInput}
+          onChange={(e) => setPlacaInput(e.target.value.toUpperCase())}
+          className="bg-muted border-border font-mono"
+          maxLength={8}
+        />
+        <button
+          onClick={consultarPlaca}
+          disabled={consultando || !placaInput}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
+        >
+          {consultando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          {consultando ? "..." : "Consultar"}
+        </button>
+      </div>
       <SmartDocumentUpload
         documentType="crv"
         onDataExtracted={handleExtracted}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">motordrive</string>
+    <string name="title_activity_main">motordrive</string>
+    <string name="package_name">com.motordrive.app</string>
+    <string name="custom_url_scheme">com.motordrive.app</string>
+</resources>

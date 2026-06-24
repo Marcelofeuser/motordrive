@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { DollarSign, TrendingUp, Fuel, MapPin, Zap, AlertTriangle, Car, ChevronRight, PiggyBank, HelpCircle } from "lucide-react";
+import { DollarSign, TrendingUp, Fuel, MapPin, Zap, AlertTriangle, Car, ChevronRight, PiggyBank, HelpCircle, ShieldCheck } from "lucide-react";
 import TourTooltip, { useTour } from "@/components/TourTooltip";
 import StatCard from "@/components/StatCard";
 import { useElectricData } from "@/hooks/useElectricData";
@@ -18,6 +18,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [veiculo, setVeiculo] = useState<VeiculoData | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [tourActive, setTourActive] = useState(!localStorage.getItem("tour_dashboard"));
   const { startTour } = useTour("dashboard");
 
@@ -32,8 +33,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("veiculo").select("placa,marca,modelo,ano_fabricacao,cor").eq("user_id", user.id).maybeSingle()
+    supabase.from("veiculo").select("placa,marca,modelo,ano_fabricacao,cor").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => { if (data) setVeiculo(data); });
+
+    supabase
+      .from("admins")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setIsAdmin(true); });
   }, [user]);
 
   const maxWeek = Math.max(...dash.weekData.map((d) => d.value), 1);
@@ -56,6 +64,19 @@ export default function Dashboard() {
           <span className="text-xs text-velocity-green font-semibold">Online</span>
         </div>
       </div>
+
+      {/* Atalho Super Admin */}
+      {isAdmin && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          onClick={() => navigate("/admin")}
+          className="w-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 rounded-2xl p-3 mb-6 flex items-center justify-center gap-2 font-bold text-sm hover:bg-yellow-500/20 transition-all shadow-lg shadow-yellow-500/5"
+        >
+          <ShieldCheck className="w-4 h-4" />
+          Acessar Painel Administrativo
+        </motion.button>
+      )}
 
       {/* Veículo ativo */}
       <motion.button
@@ -148,7 +169,7 @@ export default function Dashboard() {
         </div>
         {dash.loading ? <div className="h-32 bg-muted/30 animate-pulse rounded-lg" /> : (
           <div className="h-32">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dash.weekData} barCategoryGap="20%">
                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(240 5% 65%)" }} />
                 <YAxis hide />
