@@ -1,23 +1,23 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
 export function ProGate({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
   const { hasProAccess, loading } = useSubscription();
   const navigate = useNavigate();
-  const isPlanos = window.location.pathname === "/planos";
-  const isLogin = window.location.pathname === "/login" || window.location.pathname === "/auth";
-  const isCheckout = window.location.pathname.startsWith("/checkout");
+  const location = useLocation();
+
+  const isPublic = ["/planos", "/login", "/auth", "/checkout"].some(p =>
+    location.pathname.startsWith(p)
+  );
 
   useEffect(() => {
-    if (loading) return;
-    if (!hasProAccess && !isPlanos && !isCheckout && !isLogin) {
+    if (loading || isPublic) return;
+    if (!hasProAccess) {
       navigate("/planos");
     }
-  }, [hasProAccess, loading, isPlanos, isCheckout]);
+  }, [hasProAccess, loading, isPublic]);
 
   if (loading) {
     return (
